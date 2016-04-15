@@ -246,14 +246,14 @@
  <Reference Include="UnityEngine.Analytics">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
+ <Reference Include="Mono.Security">
+ <HintPath>C:/Github-SE-Project/NYU Maps/Assets/Plugins/Mono.Security.dll</HintPath>
+ </Reference>
  <Reference Include="Npgsql">
- <HintPath>C:/Users/Nick/Desktop/Unity Projects/NYU Maps/Assets/Plugins/Npgsql.dll</HintPath>
+ <HintPath>C:/Github-SE-Project/NYU Maps/Assets/Plugins/Npgsql.dll</HintPath>
  </Reference>
  <Reference Include="System.Data">
- <HintPath>C:/Users/Nick/Desktop/Unity Projects/NYU Maps/Assets/Plugins/System.Data.dll</HintPath>
- </Reference>
- <Reference Include="Mono.Security">
- <HintPath>C:/Users/Nick/Desktop/Unity Projects/NYU Maps/Assets/Plugins/Mono.Security.dll</HintPath>
+ <HintPath>C:/Github-SE-Project/NYU Maps/Assets/Plugins/System.Data.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Cecil">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/Mono.Cecil.dll</HintPath>

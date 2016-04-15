@@ -113,7 +113,6 @@ public class GameflowController : MonoBehaviour
 
 	public Player GetLocalPlayer()
 	{
-		Debug.Log ("LocalPlayername: " + players [localPlayerID].name);
 		return players [localPlayerID];
 	}
 
@@ -130,10 +129,20 @@ public class GameflowController : MonoBehaviour
 
 		//update GUI and tapping - enable
 		orientationController.SetMovesLabel ("Roll First");
+		orientationController.SetRollDiceButtonStatus (true);
+		orientationController.SetEndTurnButtonStatus (true);
 
 		tileController.SetCanLightUpTile (true);
 		SetInitialCameraPosition ();
+	}
 
+	public void RollDice()
+	{
+		canMovePlayer = false;
+		remainingMoves = (int)Random.Range (1, 7);
+		orientationController.SetMovesLabel (remainingMoves.ToString());
+		orientationController.SetRollDiceButtonStatus (false);
+		StartCoroutine (DelayedSetCanMovePlayer (true));
 	}
 
 	public void EndTurn()
@@ -142,19 +151,10 @@ public class GameflowController : MonoBehaviour
 		turnHasBegun = false;
 		//update GUI and tapping - disable
 		orientationController.SetMovesLabel ("Wait Nub");
-		orientationController.setMovesButtonStatus (false);
+		orientationController.SetEndTurnButtonStatus (false);
 		tileController.SetCanLightUpTile (false);
 	}
-
-	public void RollDice()
-	{
-		canMovePlayer = false;
-		remainingMoves = (int)Random.Range (1, 7);
-		orientationController.SetMovesLabel (remainingMoves.ToString());
-		orientationController.setMovesButtonStatus (false);
-		StartCoroutine (DelayedSetCanMovePlayer (true));
-	}
-
+	
 	IEnumerator DelayedSetCanMovePlayer(bool val)
 	{
 		yield return new WaitForEndOfFrame ();

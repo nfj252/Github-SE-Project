@@ -125,6 +125,15 @@
  <Reference Include="UnityEngine.Analytics">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/UnityAnalytics/UnityEngine.Analytics.dll</HintPath>
  </Reference>
+ <Reference Include="Mono.Security">
+ <HintPath>C:/Github-SE-Project/NYU Maps/Assets/Plugins/Mono.Security.dll</HintPath>
+ </Reference>
+ <Reference Include="Npgsql">
+ <HintPath>C:/Github-SE-Project/NYU Maps/Assets/Plugins/Npgsql.dll</HintPath>
+ </Reference>
+ <Reference Include="System.Data">
+ <HintPath>C:/Github-SE-Project/NYU Maps/Assets/Plugins/System.Data.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEditor.Graphs">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.Graphs.dll</HintPath>
  </Reference>
@@ -157,15 +166,6 @@
  </Reference>
  <Reference Include="UnityEditor.OSXStandalone.Extensions">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/PlaybackEngines/macstandalonesupport/UnityEditor.OSXStandalone.Extensions.dll</HintPath>
- </Reference>
- <Reference Include="Npgsql">
- <HintPath>C:/Users/Nick/Desktop/Unity Projects/NYU Maps/Assets/Plugins/Npgsql.dll</HintPath>
- </Reference>
- <Reference Include="System.Data">
- <HintPath>C:/Users/Nick/Desktop/Unity Projects/NYU Maps/Assets/Plugins/System.Data.dll</HintPath>
- </Reference>
- <Reference Include="Mono.Security">
- <HintPath>C:/Users/Nick/Desktop/Unity Projects/NYU Maps/Assets/Plugins/Mono.Security.dll</HintPath>
  </Reference>
  <Reference Include="Mono.Cecil">
  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/Mono.Cecil.dll</HintPath>

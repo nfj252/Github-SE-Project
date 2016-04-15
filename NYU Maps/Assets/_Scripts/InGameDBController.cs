@@ -79,17 +79,25 @@ public class InGameDBController : MonoBehaviour
 
 	public void FetchCurrentPlayerTurn()
 	{
-		//QUERY PLAYER TURN
-		//currentPlayerTurn = result
+		dbcmd = dbcon.CreateCommand();
+		dbcmd.CommandText =  string.Format ("SELECT currentturn FROM ingameroom WHERE roomid = '{0}';", (int)gameID);
+		reader = dbcmd.ExecuteReader();
+		while(reader.Read()) 
+			currentPlayerTurn = reader.GetInt32(0);
+		CleanUpSQLVariables ();
 	}
 
 	public void IncrementPTurn()
 	{
 		currentPlayerTurn++;
-		if (currentPlayerTurn >= numberOfPlayers)
+		if (currentPlayerTurn == numberOfPlayers)
 			currentPlayerTurn = 0;
-		Debug.Log ("CurrentPlayerTurn: " + currentPlayerTurn);
-		//QUERY INSERT CURRENT PLAYER TURN
+
+		dbcmd = dbcon.CreateCommand();
+		dbcmd.CommandText =  string.Format ("UPDATE ingameroom SET currentturn = '{0}' WHERE roomid = '{1}';", 
+		                                    (int)currentPlayerTurn, (int)gameID);
+		reader = dbcmd.ExecuteReader();
+		CleanUpSQLVariables ();
 	}
 
 	public void MovePlayer(int playerCountID, Vector2 destination)

@@ -38,6 +38,5 @@ public class Player : MonoBehaviour
 	{
 		destinationLocation = destination;
 		destinationPosition = tileController.ConvertLocationToPosition(destination, playerModel.transform.localPosition.y);
-		Debug.Log (destinationPosition);
 	}
 }

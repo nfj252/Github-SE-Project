@@ -6,6 +6,7 @@ public class OrientationController : MonoBehaviour
 	public UITexture mainUIBackdrop;
 	public UILabel movesLabel;
 	public UITexture rollDiceButton;
+	public UITexture endTurnButton;
 
 	void Start () 
 	{
@@ -19,8 +20,21 @@ public class OrientationController : MonoBehaviour
 		movesLabel.text = content;
 	}
 
-	public void setMovesButtonStatus(bool status)
+	public void SetEndTurnButtonStatus(bool status)
+	{
+		endTurnButton.GetComponent<BoxCollider>().enabled = status;
+		if (status)
+			endTurnButton.GetComponent<TweenAlpha> ().PlayReverse ();
+		else
+			endTurnButton.GetComponent<TweenAlpha> ().PlayForward ();
+	}
+
+	public void SetRollDiceButtonStatus(bool status)
 	{
 		rollDiceButton.GetComponent<BoxCollider>().enabled = status;
+		if (status)
+			rollDiceButton.GetComponent<TweenAlpha> ().PlayReverse ();
+		else
+			rollDiceButton.GetComponent<TweenAlpha> ().PlayForward ();
 	}
 }
