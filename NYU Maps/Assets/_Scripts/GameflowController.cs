@@ -34,16 +34,18 @@ public class GameflowController : MonoBehaviour
 
 		inGameDBController.StartConnection();
 		inGameDBController.FetchRoomData ();
+		inGameDBController.FetchCurrentPlayerTurn ();
 
 		CreatePlayers (inGameDBController.GetNumberOfPlayers ());
 
-		localPlayerID = 0; ///////////////////temp
+		localPlayerID = 2; ///////////////////temp
 		tileController.SetLocalPlayerModelRef(players[localPlayerID].playerModel); ///////////////////temp
 		remainingMoves = 0;
 
 		SetInitialCameraPosition ();
 		canMovePlayer = false;
 		turnHasBegun = false;
+
 
 		if(GetIsLocalPlayerTurn())
 			BeginTurn();
@@ -124,6 +126,7 @@ public class GameflowController : MonoBehaviour
 
 	public void BeginTurn ()
 	{
+		Debug.Log ("WHAT");
 		turnHasBegun = true;
 		GetLocalPlayer ().ResetDestinationLocation ();
 
@@ -178,7 +181,9 @@ public class GameflowController : MonoBehaviour
 			}
 
 			if(!turnHasBegun && GetIsLocalPlayerTurn())
+			{
 				BeginTurn();
+			}
 		}
 	}
 }

@@ -23,7 +23,6 @@ public class InGameDBController : MonoBehaviour
 	{
 		playerNames = new List<string>();
 		playerLocations = new List<Vector2>();
-		currentPlayerTurn = 0;
 	}
 
 	public void StartConnection () 
