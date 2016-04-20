@@ -41,13 +41,17 @@ public class TileController : MonoBehaviour
 		for(int i = 0; i < litContainer.Count; i++)
 			ResetTileColor(litContainer[i]);
 		litContainer.Clear();
-		inputTile.GetComponent<MeshRenderer>().material.color = greenColor;
-		litContainer.Add (inputTile);
+		if(inputTile.tileType == "None")
+		{
+			inputTile.GetComponent<MeshRenderer>().material.color = greenColor;
+			litContainer.Add (inputTile);
+		}
 	}
 	
 	void ResetTileColor(Tile inputTile)
 	{
-		inputTile.gameObject.GetComponent<MeshRenderer>().material.color = defaultColor;
+		if(inputTile.tileType == "None")
+			inputTile.gameObject.GetComponent<MeshRenderer>().material.color = defaultColor;
 	}
 
 	public void SetCanLightUpTile(bool val)
@@ -82,7 +86,7 @@ public class TileController : MonoBehaviour
 				GameObject tileInstance = Instantiate (tilePrefab);
 				tileInstance.transform.parent = tilesParent.transform;
 				tileInstance.transform.localPosition = new Vector3(j*(1 + tileOffset), 0, i*(1 + tileOffset));
-				tileInstance.GetComponent<Tile>().TileSetup(j, i, "none", tileInstance);
+				tileInstance.GetComponent<Tile>().TileSetup(j, i, "None", tileInstance);
 				tilesContainer.Add(tileInstance.GetComponent<Tile>());
 			}
 		}
@@ -99,11 +103,4 @@ public class TileController : MonoBehaviour
 		}
 		return null;
 	}
-
-	public void SetBuildingsOnGrid()
-	{
-		//set building locations and stuff
-	}
-
-
 }

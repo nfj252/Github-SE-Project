@@ -37,8 +37,8 @@ public class TouchInputController : MonoBehaviour
 			if (Physics.Raycast (ray, out hit, Mathf.Infinity, touchInputMask))
 			{			
 				GameObject recipient = hit.transform.gameObject;
-				if(recipient.GetComponent<Tile>().location != gameFlowController.GetCurrentPlayer().location)
-					touchList.Add(recipient);
+				if(recipient.GetComponent<Tile>().location != gameFlowController.GetCurrentPlayer().location && recipient.GetComponent<Tile>().tileType == "None")
+					touchesOld.Add(recipient);
 				Debug.Log("Touched " + recipient.name);
 				float tileXDistance = gameFlowController.GetLocalPlayer().location.x - recipient.GetComponent<Tile>().location.x;
 				float tileYDistance = gameFlowController.GetLocalPlayer().location.y - recipient.GetComponent<Tile>().location.y;
@@ -47,10 +47,13 @@ public class TouchInputController : MonoBehaviour
 				if (Input.GetMouseButtonDown(0))
 				{
 					recipient.SendMessage("OnTouchDown",hit.point,SendMessageOptions.DontRequireReceiver);
-					if (!gameFlowController.GetCanMovePlayer() || totalTileDistance > gameFlowController.GetRemainingMoves())
-						recipient.GetComponent<MeshRenderer>().material.color = tileController.redColor;
-					else
-						recipient.GetComponent<MeshRenderer>().material.color = tileController.blueColor;
+					if(recipient.GetComponent<Tile>().tileType == "None")
+					{
+						if (!gameFlowController.GetCanMovePlayer() || totalTileDistance > gameFlowController.GetRemainingMoves())
+							recipient.GetComponent<MeshRenderer>().material.color = tileController.redColor;
+						else
+							recipient.GetComponent<MeshRenderer>().material.color = tileController.blueColor;
+					}
 					lastMousePosition = Input.mousePosition;
 				}
 				
@@ -61,7 +64,7 @@ public class TouchInputController : MonoBehaviour
 					{
 						if((Input.mousePosition - lastMousePosition).sqrMagnitude < new Vector3(touchSenseLeeway,touchSenseLeeway,touchSenseLeeway).sqrMagnitude)
 						{
-							if(gameFlowController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn() && recipient.GetComponent<Tile>().tileType == "none")
+							if(gameFlowController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn())
 							{
 								if(totalTileDistance <= gameFlowController.GetRemainingMoves())
 								{
@@ -74,12 +77,6 @@ public class TouchInputController : MonoBehaviour
 					for(int i = 0; i < touchesOld.Count; i++)
 						touchesOld[i].GetComponent<MeshRenderer>().material.color = tileController.defaultColor;
 					touchesOld.Clear();
-				}
-
-				if (Input.GetMouseButton(0)) 
-				{
-					recipient.SendMessage("OnTouchStay",hit.point,SendMessageOptions.DontRequireReceiver);
-					touchesOld.Add (recipient);
 				}
 			}
 			
@@ -104,8 +101,8 @@ public class TouchInputController : MonoBehaviour
 				if (Physics.Raycast (ray, out hit, Mathf.Infinity, touchInputMask)) 
 				{
 					GameObject recipient = hit.transform.gameObject;
-					if(recipient.GetComponent<Tile>().location != gameFlowController.GetCurrentPlayer().location)
-						touchList.Add(recipient);
+					if(recipient.GetComponent<Tile>().location != gameFlowController.GetCurrentPlayer().location || recipient.GetComponent<Tile>().tileType == "None")
+						touchesOld.Add(recipient);
 					float tileXDistance = gameFlowController.GetLocalPlayer().location.x - recipient.GetComponent<Tile>().location.x;
 					float tileYDistance = gameFlowController.GetLocalPlayer().location.y - recipient.GetComponent<Tile>().location.y;
 					int totalTileDistance = (int)(Mathf.Abs(tileXDistance) + Mathf.Abs(tileYDistance));
@@ -114,10 +111,13 @@ public class TouchInputController : MonoBehaviour
 					{
 						recipient.SendMessage("OnTouchDown",hit.point,SendMessageOptions.DontRequireReceiver);
 						lastTouchPosition = Input.touches[0].position;
-						if(!gameFlowController.GetCanMovePlayer() || totalTileDistance > gameFlowController.GetRemainingMoves())
-							recipient.GetComponent<MeshRenderer>().material.color = tileController.redColor;
-						else
-							recipient.GetComponent<MeshRenderer>().material.color = tileController.blueColor;
+						if(recipient.GetComponent<Tile>().tileType == "None")
+						{
+							if(!gameFlowController.GetCanMovePlayer() || totalTileDistance > gameFlowController.GetRemainingMoves())
+								recipient.GetComponent<MeshRenderer>().material.color = tileController.redColor;
+							else
+								recipient.GetComponent<MeshRenderer>().material.color = tileController.blueColor;
+						}
 					}
 					if (touch.phase == TouchPhase.Ended)
 					{
@@ -126,7 +126,7 @@ public class TouchInputController : MonoBehaviour
 						{
 							if(Mathf.Abs(Vector2.Distance(Input.touches[0].position,lastTouchPosition)) < touchSenseLeeway)
 							{
-								if(gameFlowController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn() && recipient.GetComponent<Tile>().tileType == "none")
+								if(gameFlowController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn())
 								{
 									if(totalTileDistance <= gameFlowController.GetRemainingMoves())
 									{
@@ -143,7 +143,6 @@ public class TouchInputController : MonoBehaviour
 					if (touch.phase == TouchPhase.Stationary || touch.phase == TouchPhase.Moved) 
 					{
 						recipient.SendMessage("OnTouchStay",hit.point,SendMessageOptions.DontRequireReceiver);
-						touchesOld.Add (recipient);
 					}
 					if (touch.phase == TouchPhase.Canceled)
 					{
