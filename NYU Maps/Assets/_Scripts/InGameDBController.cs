@@ -15,14 +15,17 @@ public class InGameDBController : MonoBehaviour
 	int currentPlayerTurn;
 	
 	Vector2 gridSize;
+	List<string> buildingData;
+
 	NpgsqlConnection dbcon;
 	NpgsqlCommand dbcmd;
 	NpgsqlDataReader reader;
-
+	
 	void Start()
 	{
 		playerNames = new List<string>();
 		playerLocations = new List<Vector2>();
+		buildingData = new List<string>();
 	}
 
 	public void StartConnection () 
@@ -60,6 +63,16 @@ public class InGameDBController : MonoBehaviour
 		int gridX = 34;  //will be fetched from database later on
 		int gridY = 14;  //will be fetched from database later on
 		gridSize = new Vector2 (gridX, gridY);
+	}
+
+	public void FetchBuildingData()
+	{
+		//QUERY BUILDING ENTRANCE DATA
+		//in each while loop iteration of reader.Read()
+		string tempReader0 = "Library"; //temp for reader.GetString(0) = name
+		string tempReader1 = "3,4"; //temp for reader.GetString(1) = entrance
+		string tempReader2 = "5,5-6,5-5,6-6,6"; //temp for reader.GetString(2) = tiles
+		buildingData.Add (tempReader0 + ";" + tempReader1 + ";" + tempReader2);
 	}
 
 	public void FetchPlayerLocations()
@@ -137,6 +150,11 @@ public class InGameDBController : MonoBehaviour
 	public int GetNumberOfPlayers()
 	{
 		return numberOfPlayers;
+	}
+
+	public List<string> GetBuildingData()
+	{
+		return buildingData;
 	}
 
 	void CleanUpSQLVariables()

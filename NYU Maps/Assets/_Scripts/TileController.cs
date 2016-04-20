@@ -100,7 +100,7 @@ public class TileController : MonoBehaviour
 		return null;
 	}
 
-	public void SetGridFeatures()
+	public void SetBuildingsOnGrid()
 	{
 		//set building locations and stuff
 	}

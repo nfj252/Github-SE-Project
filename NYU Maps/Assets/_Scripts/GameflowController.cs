@@ -11,6 +11,7 @@ public class GameflowController : MonoBehaviour
 	public float playerModelMoveSpeed;
 
 	TileController tileController;
+	BuildingController buildingController;
 	InGameDBController inGameDBController;
 	OrientationController orientationController;
 	public List<Player> players;
@@ -23,14 +24,18 @@ public class GameflowController : MonoBehaviour
 	void Start () 
 	{
 		tileController = FindObjectOfType<TileController>();
-		tileController.Setup ();
+		tileController.Setup();
+		buildingController = FindObjectOfType<BuildingController> ();
+		buildingController.Setup();
 		inGameDBController = FindObjectOfType<InGameDBController>();
 		orientationController = FindObjectOfType<OrientationController>();
+
 		players = new List<Player>();
 
 		inGameDBController.FetchInitialGridData ();
 		tileController.CreateGrid (inGameDBController.GetGridSize());
-		tileController.SetGridFeatures();
+		inGameDBController.FetchBuildingData ();
+		buildingController.CreateBuildings (inGameDBController.GetBuildingData());
 
 		inGameDBController.StartConnection();
 		inGameDBController.FetchRoomData ();
@@ -38,7 +43,7 @@ public class GameflowController : MonoBehaviour
 
 		CreatePlayers (inGameDBController.GetNumberOfPlayers ());
 
-		localPlayerID = 2; ///////////////////temp
+		localPlayerID = 0; ///////////////////temp
 		tileController.SetLocalPlayerModelRef(players[localPlayerID].playerModel); ///////////////////temp
 		remainingMoves = 0;
 
@@ -126,7 +131,6 @@ public class GameflowController : MonoBehaviour
 
 	public void BeginTurn ()
 	{
-		Debug.Log ("WHAT");
 		turnHasBegun = true;
 		GetLocalPlayer ().ResetDestinationLocation ();
 

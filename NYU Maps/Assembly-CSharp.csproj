@@ -184,6 +184,8 @@
      <Compile Include="Assets\NGUI\Scripts\UI\UITooltip.cs" />
      <Compile Include="Assets\NGUI\Scripts\UI\UIViewport.cs" />
      <Compile Include="Assets\OrientationController.cs" />
+     <Compile Include="Assets\_Scripts\Building.cs" />
+     <Compile Include="Assets\_Scripts\BuildingController.cs" />
      <Compile Include="Assets\_Scripts\CameraController.cs" />
      <Compile Include="Assets\_Scripts\GameflowController.cs" />
      <Compile Include="Assets\_Scripts\InGameDBController.cs" />

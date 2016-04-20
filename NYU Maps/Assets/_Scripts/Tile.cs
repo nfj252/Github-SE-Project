@@ -10,9 +10,9 @@ public class Tile : MonoBehaviour
 	
 	public void TileSetup(int xVal, int yVal, string typeVal, GameObject tilePrefab)
 	{
-		this.name = "X" + xVal + "Y" + yVal;
 		location = new Vector2 (xVal, yVal);
 		tileType = typeVal;
 		tileModel = tilePrefab;
+		this.name = "X" + xVal + "Y" + yVal;
 	}
 }
