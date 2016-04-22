@@ -30,17 +30,15 @@ public class GameflowController : MonoBehaviour
 		inGameDBController = FindObjectOfType<InGameDBController>();
 		orientationController = FindObjectOfType<OrientationController>();
 
-		players = new List<Player>();
-
+		inGameDBController.StartConnection();
 		inGameDBController.FetchInitialGridData ();
 		tileController.CreateGrid (inGameDBController.GetGridSize());
 		inGameDBController.FetchBuildingData ();
 		buildingController.CreateBuildings (inGameDBController.GetBuildingData());
-
-		inGameDBController.StartConnection();
 		inGameDBController.FetchRoomData ();
 		inGameDBController.FetchCurrentPlayerTurn ();
 
+		players = new List<Player>();
 		CreatePlayers (inGameDBController.GetNumberOfPlayers ());
 
 		localPlayerID = 0; ///////////////////temp

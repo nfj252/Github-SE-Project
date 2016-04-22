@@ -20,9 +20,10 @@ public class BuildingController : MonoBehaviour
 		{
 			string[] buildingData = buildingDataList[i].Split(';');
 			string name = buildingData[0];
-			Color buildingColor = new Color(int.Parse(buildingData[3].Split(',')[0]), 
-			                                int.Parse(buildingData[3].Split(',')[1]), 
-			                                int.Parse(buildingData[3].Split(',')[2]));
+			Color buildingColor = new Color(int.Parse(buildingData[3].Split(',')[0])/255, 
+			                                int.Parse(buildingData[3].Split(',')[1])/255, 
+			                                int.Parse(buildingData[3].Split(',')[2])/255,
+			                                .5f);
 			Vector2 entrance = new Vector2(int.Parse(buildingData[1].Split(',')[0]), 
 			                               int.Parse(buildingData[1].Split(',')[1]));
 			tileController.GetTile((int)entrance.x, (int)entrance.y).tileType = "Entrance-" + name;
