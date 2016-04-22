@@ -7,6 +7,7 @@ public class Tile : MonoBehaviour
 	public string tileType;
 	public Vector2 location;
 	public GameObject tileModel;
+	public Building building = null;
 	
 	public void TileSetup(int xVal, int yVal, string typeVal, GameObject tilePrefab)
 	{

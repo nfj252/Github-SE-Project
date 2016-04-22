@@ -191,6 +191,7 @@
      <Compile Include="Assets\_Scripts\InGameDBController.cs" />
      <Compile Include="Assets\_Scripts\IntroController.cs" />
      <Compile Include="Assets\_Scripts\Player.cs" />
+     <Compile Include="Assets\_Scripts\Task.cs" />
      <Compile Include="Assets\_Scripts\Tile.cs" />
      <Compile Include="Assets\_Scripts\TileController.cs" />
      <Compile Include="Assets\_Scripts\TouchInputController.cs" />

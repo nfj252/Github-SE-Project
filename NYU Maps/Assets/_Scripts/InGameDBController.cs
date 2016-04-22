@@ -101,6 +101,14 @@ public class InGameDBController : MonoBehaviour
 		CleanUpSQLVariables ();
 	}
 
+	public void FetchNonQuantifiedTasks()
+	{
+		//QUERY TASKS
+		int result0 = 1;    //ID
+		string result1 = "To do"; //Task
+		string result2 = "Building NAme"; // Building Name
+	}
+
 	public void IncrementPTurn()
 	{
 		currentPlayerTurn++;

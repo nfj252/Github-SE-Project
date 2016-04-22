@@ -64,7 +64,8 @@ public class TouchInputController : MonoBehaviour
 					{
 						if((Input.mousePosition - lastMousePosition).sqrMagnitude < new Vector3(touchSenseLeeway,touchSenseLeeway,touchSenseLeeway).sqrMagnitude)
 						{
-							if(gameFlowController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn() && recipient.GetComponent<Tile>().tileType == "None")
+							if(gameFlowController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn() && 
+							   (recipient.GetComponent<Tile>().tileType == "None" || recipient.GetComponent<Tile>().tileType == "Entrance"))
 							{
 								if(totalTileDistance <= gameFlowController.GetRemainingMoves())
 								{
@@ -126,7 +127,8 @@ public class TouchInputController : MonoBehaviour
 						{
 							if(Mathf.Abs(Vector2.Distance(Input.touches[0].position,lastTouchPosition)) < touchSenseLeeway)
 							{
-								if(gameFlowController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn() && recipient.GetComponent<Tile>().tileType == "None")
+								if(gameFlowController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn() && 
+								   (recipient.GetComponent<Tile>().tileType == "None" || recipient.GetComponent<Tile>().tileType == "Entrance"))
 								{
 									if(totalTileDistance <= gameFlowController.GetRemainingMoves())
 									{

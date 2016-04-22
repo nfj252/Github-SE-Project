@@ -6,17 +6,17 @@ public class Building : MonoBehaviour {
 
 	public string buildingName;
 	public Vector2 entrance;
-	public Vector2 location;
-	public GameObject buildingModel;
-	//public List<int> taskIDs;
-	//public List<string> taskNames;
+	public List<Vector2> locations;
 
-	public void BuildingSetup(string inputName, Vector2 inputEntrance, Vector2 inputLocation, GameObject buildingPrefab)
+	public void BuildingSetup()
 	{
-		buildingName = inputName;
-		entrance = inputEntrance;
-		location = inputLocation;
-		buildingModel = buildingPrefab;
-		this.name = inputName;
+		locations = new List<Vector2>();
+	}
+
+	public void Copy(Building other)
+	{
+		buildingName = other.buildingName;
+		entrance = other.entrance;
+		locations = other.locations;
 	}
 }
