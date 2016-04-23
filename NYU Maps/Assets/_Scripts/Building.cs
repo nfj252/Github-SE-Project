@@ -7,16 +7,14 @@ public class Building : MonoBehaviour {
 	public string buildingName;
 	public Vector2 entrance;
 	public List<Vector2> locations;
+	public Color buildingColor;
 
-	public void BuildingSetup()
+	public void SetupBuilding(string iName, Vector2 iEntrance, Color iColor)
 	{
-		locations = new List<Vector2>();
-	}
-
-	public void Copy(Building other)
-	{
-		buildingName = other.buildingName;
-		entrance = other.entrance;
-		locations = other.locations;
+		buildingName = iName;
+		entrance = iEntrance;
+		buildingColor = iColor;
+		this.name = buildingName;
+		this.GetComponent<MeshRenderer>().materials[0].color = buildingColor;
 	}
 }

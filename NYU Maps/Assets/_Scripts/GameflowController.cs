@@ -41,7 +41,7 @@ public class GameflowController : MonoBehaviour
 		players = new List<Player>();
 		CreatePlayers (inGameDBController.GetNumberOfPlayers ());
 
-		localPlayerID = 0; ///////////////////temp
+		localPlayerID = 1; ///////////////////temp
 		tileController.SetLocalPlayerModelRef(players[localPlayerID].playerModel); ///////////////////temp
 		remainingMoves = 0;
 

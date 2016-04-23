@@ -68,11 +68,17 @@ public class InGameDBController : MonoBehaviour
 	public void FetchBuildingData()
 	{
 		dbcmd = dbcon.CreateCommand();
-		dbcmd.CommandText =  string.Format ("SELECT name,entrance,location,color,height FROM ingamebuilding;");
+		dbcmd.CommandText =  string.Format ("SELECT name,entrance,lllocation,color,length,width,height FROM ingamebuilding;");
 		reader = dbcmd.ExecuteReader();
 		while(reader.Read()) 
 		{
-			buildingData.Add(reader.GetString(0) + ";" + reader.GetString(1) + ";" + reader.GetString(2) + ";" + reader.GetString(3) + ";" + reader.GetString(4));
+			buildingData.Add(reader.GetString(0) + ";" + 
+			                 reader.GetString(1) + ";" + 
+			                 reader.GetString(2) + ";" + 
+			                 reader.GetString(3) + ";" + 
+			                 reader.GetString(4) + ";" + 
+			                 reader.GetString(5) + ";" +
+			                 reader.GetString(6));
 		}
 		CleanUpSQLVariables ();
 	}
