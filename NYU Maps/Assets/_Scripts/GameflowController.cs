@@ -14,11 +14,15 @@ public class GameflowController : MonoBehaviour
 	BuildingController buildingController;
 	InGameDBController inGameDBController;
 	OrientationController orientationController;
+	TaskController taskController;
+
+	//Player Controller Stuff
 	public List<Player> players;
 	int localPlayerID;
 	int remainingMoves;
 	bool turnHasBegun;
 	bool canMovePlayer;
+
 	float timer;
 
 	void Start () 
@@ -29,6 +33,8 @@ public class GameflowController : MonoBehaviour
 		buildingController.Setup();
 		inGameDBController = FindObjectOfType<InGameDBController>();
 		orientationController = FindObjectOfType<OrientationController>();
+		taskController = FindObjectOfType<TaskController>();
+		taskController.Setup();
 
 		inGameDBController.StartConnection();
 		inGameDBController.FetchInitialGridData ();
@@ -40,6 +46,8 @@ public class GameflowController : MonoBehaviour
 
 		players = new List<Player>();
 		CreatePlayers (inGameDBController.GetNumberOfPlayers ());
+		inGameDBController.FetchTaskData ();
+		taskController.AssignBuildingTasks (inGameDBController.GetNonQuantifiedTasks(),buildingController.GetBuildings());
 
 		localPlayerID = 1; ///////////////////temp
 		tileController.SetLocalPlayerModelRef(players[localPlayerID].playerModel); ///////////////////temp
@@ -174,8 +182,8 @@ public class GameflowController : MonoBehaviour
 		if(timer >= timerRefreshRate)
 		{
 			timer = 0f;
-			inGameDBController.FetchCurrentPlayerTurn();
-			inGameDBController.FetchPlayerLocations();
+			StartCoroutine(inGameDBController.FetchCurrentPlayerTurnCo());
+			StartCoroutine(inGameDBController.FetchPlayerLocationsCo());
 			for(int i = 0; i < players.Count; i++)
 			{
 				players[i].location = inGameDBController.GetPlayerLocation(i);

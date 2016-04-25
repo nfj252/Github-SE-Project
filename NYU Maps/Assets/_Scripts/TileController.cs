@@ -7,6 +7,7 @@ public class TileController : MonoBehaviour
 	public float tileOffset;
 	public GameObject tilePrefab;
 	public GameObject tilesParent;
+	public GameObject cameraParent;
 	public GameObject mapBackdrop;
 	public Color defaultColor;
 	public Color redColor;
@@ -92,6 +93,8 @@ public class TileController : MonoBehaviour
 		}
 		mapBackdrop.transform.localScale = new Vector3 (gridSize.x * (1 + tileOffset), gridSize.y * (1 + tileOffset), 1);
 		mapBackdrop.transform.localPosition = new Vector3 (gridSize.x/2 - .5f, mapBackdrop.transform.localPosition.y, gridSize.y/2 - .5f);
+		cameraParent.transform.localPosition = mapBackdrop.transform.localPosition;
+		Camera.main.transform.SetParent (cameraParent.transform);
 	}
 
 	public Tile GetTile(int x, int y)

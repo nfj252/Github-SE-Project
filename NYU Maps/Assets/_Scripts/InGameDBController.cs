@@ -16,6 +16,7 @@ public class InGameDBController : MonoBehaviour
 	
 	Vector2 gridSize;
 	List<string> buildingData;
+	List<string> taskData;
 
 	NpgsqlConnection dbcon;
 	NpgsqlCommand dbcmd;
@@ -26,6 +27,7 @@ public class InGameDBController : MonoBehaviour
 		playerNames = new List<string>();
 		playerLocations = new List<Vector2>();
 		buildingData = new List<string>();
+		taskData = new List<string>();
 	}
 
 	public void StartConnection () 
@@ -72,13 +74,8 @@ public class InGameDBController : MonoBehaviour
 		reader = dbcmd.ExecuteReader();
 		while(reader.Read()) 
 		{
-			buildingData.Add(reader.GetString(0) + ";" + 
-			                 reader.GetString(1) + ";" + 
-			                 reader.GetString(2) + ";" + 
-			                 reader.GetString(3) + ";" + 
-			                 reader.GetString(4) + ";" + 
-			                 reader.GetString(5) + ";" +
-			                 reader.GetString(6));
+			buildingData.Add(reader.GetString(0) + ";" + reader.GetString(1) + ";" + reader.GetString(2) + ";" + 
+			                 reader.GetString(3) + ";" + reader.GetString(4) + ";" + reader.GetString(5) + ";" + reader.GetString(6));
 		}
 		CleanUpSQLVariables ();
 	}
@@ -97,6 +94,12 @@ public class InGameDBController : MonoBehaviour
 		CleanUpSQLVariables ();
 	}
 
+	public IEnumerator FetchPlayerLocationsCo()
+	{
+		FetchPlayerLocations ();
+		yield return null;
+	}
+
 	public void FetchCurrentPlayerTurn()
 	{
 		dbcmd = dbcon.CreateCommand();
@@ -107,12 +110,22 @@ public class InGameDBController : MonoBehaviour
 		CleanUpSQLVariables ();
 	}
 
-	public void FetchNonQuantifiedTasks()
+	public IEnumerator FetchCurrentPlayerTurnCo()
+	{
+		FetchCurrentPlayerTurn ();
+		yield return null;
+	}
+
+	public void FetchTaskData()
 	{
 		//QUERY TASKS
 		int result0 = 1;    //ID
-		string result1 = "To do"; //Task
-		string result2 = "Building NAme"; // Building Name
+		string result1 = "Be a Hobo"; //Task
+		string result2 = "5"; //quantity
+		string result3 = "etc"; // Building Name
+
+		//in reader while loop
+		taskData.Add(result0 + ";" + result1 + ";" + result2 + ";" + result3);
 	}
 
 	public void IncrementPTurn()
@@ -171,6 +184,11 @@ public class InGameDBController : MonoBehaviour
 	public List<string> GetBuildingData()
 	{
 		return buildingData;
+	}
+
+	public List<string> GetNonQuantifiedTasks()
+	{
+		return taskData;
 	}
 
 	void CleanUpSQLVariables()
