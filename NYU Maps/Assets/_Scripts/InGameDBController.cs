@@ -118,14 +118,12 @@ public class InGameDBController : MonoBehaviour
 
 	public void FetchTaskData()
 	{
-		//QUERY TASKS
-		int result0 = 1;    //ID
-		string result1 = "Be a Hobo"; //Task
-		string result2 = "5"; //quantity
-		string result3 = "etc"; // Building Name
-
-		//in reader while loop
-		taskData.Add(result0 + ";" + result1 + ";" + result2 + ";" + result3);
+		dbcmd = dbcon.CreateCommand();
+		dbcmd.CommandText =  string.Format ("SELECT taskid, taskname, quantity, buildingname from ingametask");
+		reader = dbcmd.ExecuteReader();
+		while(reader.Read()) 
+			taskData.Add(reader.GetInt32(0) + ";" + reader.GetString(1) + ";" + reader.GetInt32(2) + ";" + reader.GetString(3));
+		CleanUpSQLVariables ();
 	}
 
 	public void IncrementPTurn()
@@ -186,7 +184,7 @@ public class InGameDBController : MonoBehaviour
 		return buildingData;
 	}
 
-	public List<string> GetNonQuantifiedTasks()
+	public List<string> GetTaskData()
 	{
 		return taskData;
 	}

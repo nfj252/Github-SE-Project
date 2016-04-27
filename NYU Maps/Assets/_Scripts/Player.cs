@@ -6,7 +6,7 @@ public class Player : MonoBehaviour
 {
 	public string playerName;
 	public Vector2 location;
-	public List<int> tasks;
+	public List<Task> tasks;
 	public GameObject playerModel;
 	public Vector2 destinationLocation;
 	public Vector3 destinationPosition;

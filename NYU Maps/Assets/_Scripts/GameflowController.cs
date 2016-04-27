@@ -9,6 +9,7 @@ public class GameflowController : MonoBehaviour
 	public GameObject playerPrefab;
 	public float timerRefreshRate;
 	public float playerModelMoveSpeed;
+	public int numberOfTasksToComplete;
 
 	TileController tileController;
 	BuildingController buildingController;
@@ -47,7 +48,8 @@ public class GameflowController : MonoBehaviour
 		players = new List<Player>();
 		CreatePlayers (inGameDBController.GetNumberOfPlayers ());
 		inGameDBController.FetchTaskData ();
-		taskController.AssignBuildingTasks (inGameDBController.GetNonQuantifiedTasks(),buildingController.GetBuildings());
+		taskController.AssignBuildingTasks (inGameDBController.GetTaskData(), buildingController.GetBuildings());
+		taskController.AssignLocalPlayerTasks (inGameDBController.GetTaskData (), GetLocalPlayer (), numberOfTasksToComplete);
 
 		localPlayerID = 1; ///////////////////temp
 		tileController.SetLocalPlayerModelRef(players[localPlayerID].playerModel); ///////////////////temp
