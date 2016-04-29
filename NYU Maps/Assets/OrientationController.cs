@@ -5,16 +5,25 @@ using System.Collections.Generic;
 public class OrientationController : MonoBehaviour 
 {
 	public UIPanel lpTasksPanel;
+	public UIPanel buildingTasksPanel;
 
 	public UITexture mainUIBackdrop;
 	public UITexture lpTasksBackdrop;
+	public UITexture buildingTasksBackdrop;
+
 	public UILabel movesLabel;
 	public UITexture rollDiceButton;
+	public UITexture enterBuildingButton;
 	public UITexture endTurnButton;
 
 	public GameObject lpTaskLabelParent;
 	public GameObject lpTaskLabelPrefab;
 	public UILabel lpTaskButtonLabel;
+
+	public GameObject buildingTaskLabelParent;
+	public GameObject buildingTaskLabelPrefab;
+	public UILabel buildingTaskButtonLabel;
+	public UILabel buildingPanelTitleLabel;
 
 	public void ScaleUI () 
 	{
@@ -22,6 +31,7 @@ public class OrientationController : MonoBehaviour
 		mainUIBackdrop.transform.localScale = new Vector3 (mainUIScaler, mainUIScaler, 1);
 		mainUIBackdrop.transform.localPosition = new Vector3 (-mainUIBackdrop.width*mainUIScaler/2,0,0);
 		lpTasksBackdrop.transform.localScale = new Vector3 (mainUIScaler, mainUIScaler, 1);
+		buildingTasksBackdrop.transform.localScale = new Vector3 (mainUIScaler, mainUIScaler, 1);
 	}
 
 	public void SetMovesLabel(string content)
@@ -31,20 +41,29 @@ public class OrientationController : MonoBehaviour
 
 	public void SetEndTurnButtonStatus(bool status)
 	{
-		endTurnButton.GetComponent<BoxCollider>().enabled = status;
-		if (status)
-			endTurnButton.GetComponent<TweenAlpha> ().PlayReverse ();
+		endTurnButton.GetComponent<UIButton> ().enabled = status;
+		if(status)
+			endTurnButton.GetComponent<UIButton> ().SetState(UIButtonColor.State.Normal, true);
 		else
-			endTurnButton.GetComponent<TweenAlpha> ().PlayForward ();
+			endTurnButton.GetComponent<UIButton> ().SetState(UIButtonColor.State.Disabled, true);
 	}
 
 	public void SetRollDiceButtonStatus(bool status)
 	{
-		rollDiceButton.GetComponent<BoxCollider>().enabled = status;
-		if (status)
-			rollDiceButton.GetComponent<TweenAlpha> ().PlayReverse ();
+		rollDiceButton.GetComponent<UIButton> ().enabled = status;
+		if(status)
+			rollDiceButton.GetComponent<UIButton> ().SetState(UIButtonColor.State.Normal, true);
 		else
-			rollDiceButton.GetComponent<TweenAlpha> ().PlayForward ();
+			rollDiceButton.GetComponent<UIButton> ().SetState(UIButtonColor.State.Disabled, true);
+	}
+
+	public void SetEnterBuildingButtonStatus(bool status)
+	{
+		enterBuildingButton.GetComponent<UIButton> ().enabled = status;
+		if(status)
+			enterBuildingButton.GetComponent<UIButton> ().SetState(UIButtonColor.State.Normal, true);
+		else
+			enterBuildingButton.GetComponent<UIButton> ().SetState(UIButtonColor.State.Disabled, true);
 	}
 
 	public void InitializeLPTaskLabels (List<Task> tasks)
@@ -73,5 +92,24 @@ public class OrientationController : MonoBehaviour
 			lpTaskButtonLabel.text = "Show Tasks";
 			lpTasksPanel.GetComponent<TweenAlpha>().PlayReverse();
 		}
+	}
+
+	public void ToggleBuildingTasksPanel()
+	{
+		if(buildingTasksPanel.alpha == 0)
+		{
+			buildingTaskButtonLabel.text = "Exit Building";
+			buildingTasksPanel.GetComponent<TweenAlpha>().PlayForward();
+		}
+		else
+		{
+			buildingTaskButtonLabel.text = "Enter Building";
+			buildingTasksPanel.GetComponent<TweenAlpha>().PlayReverse();
+		}
+	}
+
+	public void SetBuildingPanelTitle(string buildingName)
+	{
+		buildingPanelTitleLabel.text = buildingName;
 	}
 }

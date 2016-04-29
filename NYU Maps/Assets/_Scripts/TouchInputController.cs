@@ -10,6 +10,7 @@ public class TouchInputController : MonoBehaviour
 	GameflowController gameFlowController;
 	InGameDBController inGameDBController;
 	TileController tileController;
+	OrientationController orientationController;
 	enum layerValues {tile = 8};
 	List<GameObject> touchList = new List<GameObject>();
 	List<GameObject> touchesOld;
@@ -23,6 +24,7 @@ public class TouchInputController : MonoBehaviour
 		gameFlowController = FindObjectOfType<GameflowController>();
 		inGameDBController = FindObjectOfType<InGameDBController> ();
 		tileController = FindObjectOfType<TileController> ();
+		orientationController = FindObjectOfType<OrientationController> ();
 	}
 
 	void Update () 
@@ -69,7 +71,14 @@ public class TouchInputController : MonoBehaviour
 							{
 								if(totalTileDistance <= gameFlowController.GetRemainingMoves())
 								{
-									inGameDBController.MovePlayer(gameFlowController.GetLocalPlayerID(),recipient.GetComponent<Tile>().location); 
+									inGameDBController.MovePlayer(gameFlowController.GetLocalPlayerID(),recipient.GetComponent<Tile>().location);
+									if(recipient.GetComponent<Tile>().tileType == "Entrance")
+									{
+										orientationController.SetBuildingPanelTitle(recipient.GetComponent<Tile>().building.buildingName);
+										orientationController.SetEnterBuildingButtonStatus(true);
+									}
+									else
+										orientationController.SetEnterBuildingButtonStatus(false);
 									gameFlowController.SetRemainingMoves(gameFlowController.GetRemainingMoves() - totalTileDistance);
 								}
 							}
@@ -133,6 +142,13 @@ public class TouchInputController : MonoBehaviour
 									if(totalTileDistance <= gameFlowController.GetRemainingMoves())
 									{
 										inGameDBController.MovePlayer(gameFlowController.GetLocalPlayerID(),recipient.GetComponent<Tile>().location); 
+										if(recipient.GetComponent<Tile>().tileType == "Entrance")
+										{
+											orientationController.SetBuildingPanelTitle(recipient.GetComponent<Tile>().building.buildingName);
+											orientationController.SetEnterBuildingButtonStatus(true);
+										}
+										else
+											orientationController.SetEnterBuildingButtonStatus(false);
 										gameFlowController.SetRemainingMoves(gameFlowController.GetRemainingMoves() - totalTileDistance);
 									}
 								}

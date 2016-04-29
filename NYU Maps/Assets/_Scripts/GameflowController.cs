@@ -55,11 +55,17 @@ public class GameflowController : MonoBehaviour
 		orientationController.ScaleUI ();
 		localPlayerID = 0; ///////////////////temp
 		tileController.SetLocalPlayerModelRef(players[localPlayerID].playerModel); ///////////////////temp
-		remainingMoves = 0;
+
 
 		SetInitialCameraPosition ();
+		remainingMoves = 0;
 		canMovePlayer = false;
 		turnHasBegun = false;
+		orientationController.SetMovesLabel ("Wait Your Turn");
+		orientationController.SetRollDiceButtonStatus (false);
+		orientationController.SetEnterBuildingButtonStatus (false);
+		orientationController.SetEndTurnButtonStatus (false);
+		tileController.SetCanLightUpTile (false);
 
 
 		if(GetIsLocalPlayerTurn())
@@ -95,7 +101,7 @@ public class GameflowController : MonoBehaviour
 	public void SetInitialCameraPosition()
 	{
 		Vector3 cameraPosition = GetLocalPlayer ().playerModel.transform.localPosition;
-		cameraPosition += new Vector3 (0, Camera.main.transform.localPosition.y - GetLocalPlayer().playerModel.transform.localPosition.y, 0);
+		cameraPosition += new Vector3 (0, Camera.main.transform.localPosition.y, 0);
 		Camera.main.transform.localPosition = cameraPosition;
 	}
 
@@ -167,7 +173,9 @@ public class GameflowController : MonoBehaviour
 		inGameDBController.IncrementPTurn ();
 		turnHasBegun = false;
 		//update GUI and tapping - disable
-		orientationController.SetMovesLabel ("Wait Nub");
+		orientationController.SetMovesLabel ("Wait Your Turn");
+		orientationController.SetRollDiceButtonStatus (false);
+		orientationController.SetEnterBuildingButtonStatus (false);
 		orientationController.SetEndTurnButtonStatus (false);
 		tileController.SetCanLightUpTile (false);
 	}
