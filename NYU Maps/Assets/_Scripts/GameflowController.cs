@@ -50,8 +50,10 @@ public class GameflowController : MonoBehaviour
 		inGameDBController.FetchTaskData ();
 		taskController.AssignBuildingTasks (inGameDBController.GetTaskData(), buildingController.GetBuildings());
 		taskController.AssignLocalPlayerTasks (inGameDBController.GetTaskData (), GetLocalPlayer (), numberOfTasksToComplete);
+		orientationController.InitializeLPTaskLabels (GetLocalPlayer().tasks);
 
-		localPlayerID = 1; ///////////////////temp
+		orientationController.ScaleUI ();
+		localPlayerID = 0; ///////////////////temp
 		tileController.SetLocalPlayerModelRef(players[localPlayerID].playerModel); ///////////////////temp
 		remainingMoves = 0;
 

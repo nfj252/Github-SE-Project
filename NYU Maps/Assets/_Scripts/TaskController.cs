@@ -7,7 +7,6 @@ public class TaskController : MonoBehaviour
 	public GameObject buildingTasksParent;
 	public GameObject playerTasksParent;
 	public GameObject taskPrefab;
-
 	BuildingController buildingController;
 	
 	public void Setup () 

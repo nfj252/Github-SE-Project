@@ -7,6 +7,7 @@ public class Task : MonoBehaviour
 	public int taskID;
 	public string taskName;
 	public int quantity;
+	public UILabel label;
 
 	public void Setup (int iTaskID, string iTaskName, int iQuantity) 
 	{
