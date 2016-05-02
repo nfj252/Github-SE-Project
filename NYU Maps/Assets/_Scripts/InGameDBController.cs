@@ -54,17 +54,18 @@ public class InGameDBController : MonoBehaviour
 			playerNames.Add(reader.GetString (0));
 			playerLocations.Add (new Vector2 ((reader.GetInt32(1)), reader.GetInt32(2)));  
 		}
-		CleanUpSQLVariables ();
-
 		numberOfPlayers = playerNames.Count; 
+		CleanUpSQLVariables ();
 	}
 
 	public void FetchInitialGridData()
 	{
-		//QUERY GRID DATA
-		int gridX = 34;  //will be fetched from database later on
-		int gridY = 14;  //will be fetched from database later on
-		gridSize = new Vector2 (gridX, gridY);
+		dbcmd = dbcon.CreateCommand();
+		dbcmd.CommandText =  string.Format ("Select * From gridData");
+		reader = dbcmd.ExecuteReader();
+		reader.Read ();
+		gridSize = new Vector2 (reader.GetInt32(0), reader.GetInt32(1));
+		CleanUpSQLVariables ();
 	}
 
 	public void FetchBuildingData()
@@ -119,10 +120,10 @@ public class InGameDBController : MonoBehaviour
 	public void FetchTaskData()
 	{
 		dbcmd = dbcon.CreateCommand();
-		dbcmd.CommandText =  string.Format ("SELECT taskid, taskname, quantity, buildingname from ingametask");
+		dbcmd.CommandText =  string.Format ("SELECT taskname, quantity, buildingname from ingametask");
 		reader = dbcmd.ExecuteReader();
 		while(reader.Read()) 
-			taskData.Add(reader.GetInt32(0) + ";" + reader.GetString(1) + ";" + reader.GetInt32(2) + ";" + reader.GetString(3));
+			taskData.Add(reader.GetString(0) + ";" + reader.GetInt32(1) + ";" + reader.GetString(2));
 		CleanUpSQLVariables ();
 	}
 

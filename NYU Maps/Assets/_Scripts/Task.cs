@@ -4,16 +4,17 @@ using System.Collections.Generic;
 
 public class Task : MonoBehaviour 
 {
-	public int taskID;
 	public string taskName;
-	public int quantity;
 	public UILabel label;
+	public int quantity;
+	public bool completed;
 
-	public void Setup (int iTaskID, string iTaskName, int iQuantity) 
+	public void Setup (string iTaskName, int iQuantity) 
 	{
-		taskID = iTaskID;
 		taskName = iTaskName;
 		quantity = iQuantity;
+		completed = false;
 		this.name = taskName;
+		label = null;
 	}
 }

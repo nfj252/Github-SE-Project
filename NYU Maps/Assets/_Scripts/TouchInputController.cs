@@ -51,7 +51,7 @@ public class TouchInputController : MonoBehaviour
 					recipient.SendMessage("OnTouchDown",hit.point,SendMessageOptions.DontRequireReceiver);
 					if(recipient.GetComponent<Tile>().tileType == "None")
 					{
-						if (!gameFlowController.GetCanMovePlayer() || totalTileDistance > gameFlowController.GetRemainingMoves())
+						if (!orientationController.GetCanMovePlayer() || totalTileDistance > gameFlowController.GetRemainingMoves())
 							recipient.GetComponent<MeshRenderer>().material.color = tileController.redColor;
 						else
 							recipient.GetComponent<MeshRenderer>().material.color = tileController.blueColor;
@@ -66,7 +66,7 @@ public class TouchInputController : MonoBehaviour
 					{
 						if((Input.mousePosition - lastMousePosition).sqrMagnitude < new Vector3(touchSenseLeeway,touchSenseLeeway,touchSenseLeeway).sqrMagnitude)
 						{
-							if(gameFlowController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn() && 
+							if(orientationController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn() && 
 							   (recipient.GetComponent<Tile>().tileType == "None" || recipient.GetComponent<Tile>().tileType == "Entrance"))
 							{
 								if(totalTileDistance <= gameFlowController.GetRemainingMoves())
@@ -76,6 +76,7 @@ public class TouchInputController : MonoBehaviour
 									{
 										orientationController.SetBuildingPanelTitle(recipient.GetComponent<Tile>().building.buildingName);
 										orientationController.SetEnterBuildingButtonStatus(true);
+										orientationController.PrepareBuildingTaskLabels(gameFlowController.GetLocalPlayer(), recipient.GetComponent<Tile>().building);
 									}
 									else
 										orientationController.SetEnterBuildingButtonStatus(false);
@@ -123,7 +124,7 @@ public class TouchInputController : MonoBehaviour
 						lastTouchPosition = Input.touches[0].position;
 						if(recipient.GetComponent<Tile>().tileType == "None")
 						{
-							if(!gameFlowController.GetCanMovePlayer() || totalTileDistance > gameFlowController.GetRemainingMoves())
+							if(!orientationController.GetCanMovePlayer() || totalTileDistance > gameFlowController.GetRemainingMoves())
 								recipient.GetComponent<MeshRenderer>().material.color = tileController.redColor;
 							else
 								recipient.GetComponent<MeshRenderer>().material.color = tileController.blueColor;
@@ -136,7 +137,7 @@ public class TouchInputController : MonoBehaviour
 						{
 							if(Mathf.Abs(Vector2.Distance(Input.touches[0].position,lastTouchPosition)) < touchSenseLeeway)
 							{
-								if(gameFlowController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn() && 
+								if(orientationController.GetCanMovePlayer() && gameFlowController.GetIsLocalPlayerTurn() && 
 								   (recipient.GetComponent<Tile>().tileType == "None" || recipient.GetComponent<Tile>().tileType == "Entrance"))
 								{
 									if(totalTileDistance <= gameFlowController.GetRemainingMoves())
@@ -146,6 +147,7 @@ public class TouchInputController : MonoBehaviour
 										{
 											orientationController.SetBuildingPanelTitle(recipient.GetComponent<Tile>().building.buildingName);
 											orientationController.SetEnterBuildingButtonStatus(true);
+											orientationController.PrepareBuildingTaskLabels(gameFlowController.GetLocalPlayer(), recipient.GetComponent<Tile>().building);
 										}
 										else
 											orientationController.SetEnterBuildingButtonStatus(false);

@@ -22,7 +22,6 @@ public class GameflowController : MonoBehaviour
 	int localPlayerID;
 	int remainingMoves;
 	bool turnHasBegun;
-	bool canMovePlayer;
 
 	float timer;
 
@@ -59,14 +58,12 @@ public class GameflowController : MonoBehaviour
 
 		SetInitialCameraPosition ();
 		remainingMoves = 0;
-		canMovePlayer = false;
 		turnHasBegun = false;
 		orientationController.SetMovesLabel ("Wait Your Turn");
 		orientationController.SetRollDiceButtonStatus (false);
 		orientationController.SetEnterBuildingButtonStatus (false);
 		orientationController.SetEndTurnButtonStatus (false);
 		tileController.SetCanLightUpTile (false);
-
 
 		if(GetIsLocalPlayerTurn())
 			BeginTurn();
@@ -111,11 +108,6 @@ public class GameflowController : MonoBehaviour
 		return localPlayerID;
 	}
 
-	public bool GetCanMovePlayer()
-	{
-		return canMovePlayer;
-	}
-
 	public bool GetIsLocalPlayerTurn()
 	{
 		if (inGameDBController.GetCurrentPTurn () == localPlayerID)
@@ -150,7 +142,6 @@ public class GameflowController : MonoBehaviour
 		turnHasBegun = true;
 		GetLocalPlayer ().ResetDestinationLocation ();
 
-		//update GUI and tapping - enable
 		orientationController.SetMovesLabel ("Roll First");
 		orientationController.SetRollDiceButtonStatus (true);
 		orientationController.SetEndTurnButtonStatus (true);
@@ -161,11 +152,11 @@ public class GameflowController : MonoBehaviour
 
 	public void RollDice()
 	{
-		canMovePlayer = false;
+		orientationController.SetCanMovePlayer(false);
 		remainingMoves = (int)Random.Range (1, 7);
 		orientationController.SetMovesLabel (remainingMoves.ToString());
 		orientationController.SetRollDiceButtonStatus (false);
-		StartCoroutine (DelayedSetCanMovePlayer (true));
+		StartCoroutine (orientationController.DelayedSetCanMovePlayer (true));
 	}
 
 	public void EndTurn()
@@ -180,14 +171,6 @@ public class GameflowController : MonoBehaviour
 		tileController.SetCanLightUpTile (false);
 	}
 	
-	IEnumerator DelayedSetCanMovePlayer(bool val)
-	{
-		yield return new WaitForEndOfFrame ();
-		yield return new WaitForSeconds (.1f);
-		canMovePlayer = true;
-		yield return null;
-	}
-
 	void Update () 
 	{
 		timer += Time.deltaTime;

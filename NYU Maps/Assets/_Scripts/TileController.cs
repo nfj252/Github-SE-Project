@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class TileController : MonoBehaviour 
 {
-	public float tileOffset;
 	public GameObject tilePrefab;
 	public GameObject tilesParent;
 	public GameObject cameraParent;
@@ -28,8 +27,6 @@ public class TileController : MonoBehaviour
 
 	void Update () 
 	{
-		//Debug.Log (localPlayerModelRef.transform.localPosition.x);
-		//Debug.Log (Mathf.RoundToInt(localPlayerModelRef.transform.localPosition.x));
 		if(canLightUp)
 		{
 			LightUpTile(GetTile (Mathf.RoundToInt(localPlayerModelRef.transform.localPosition.x), 
@@ -86,12 +83,12 @@ public class TileController : MonoBehaviour
 			{
 				GameObject tileInstance = Instantiate (tilePrefab);
 				tileInstance.transform.parent = tilesParent.transform;
-				tileInstance.transform.localPosition = new Vector3(j*(1 + tileOffset), 0, i*(1 + tileOffset));
+				tileInstance.transform.localPosition = new Vector3(j, 0, i);
 				tileInstance.GetComponent<Tile>().TileSetup(j, i, "None", tileInstance);
 				tilesContainer.Add(tileInstance.GetComponent<Tile>());
 			}
 		}
-		mapBackdrop.transform.localScale = new Vector3 (gridSize.x * (1 + tileOffset), gridSize.y * (1 + tileOffset), 1);
+		mapBackdrop.transform.localScale = new Vector3 (gridSize.x, gridSize.y, 1);
 		mapBackdrop.transform.localPosition = new Vector3 (gridSize.x/2 - .5f, mapBackdrop.transform.localPosition.y, gridSize.y/2 - .5f);
 		cameraParent.transform.localPosition = mapBackdrop.transform.localPosition;
 		Camera.main.transform.SetParent (cameraParent.transform);

@@ -53,7 +53,6 @@ public class BuildingController : MonoBehaviour
 			tileController.GetTile((int)entrance.x, (int)entrance.y).tileType = "Entrance";
 			tileController.GetTile((int)entrance.x, (int)entrance.y).GetComponent<MeshRenderer>().material = entranceTileMat;
 			tileController.GetTile((int)entrance.x, (int)entrance.y).GetComponent<MeshRenderer>().material.color = buildingColor;
-
 			tileController.GetTile((int)entrance.x, (int)entrance.y).building = buildingComponent;
 			buildings.Add (buildingComponent);
 		}

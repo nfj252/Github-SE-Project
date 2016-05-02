@@ -23,12 +23,11 @@ public class TaskController : MonoBehaviour
 			taskObj.transform.SetParent(buildingTasksParent.transform);
 
 			string[] taskData = taskDataList[i].Split(';');
-			int taskID = int.Parse(taskData[0]);
-			string taskName = taskData[1];
-			int quantity = int.Parse(taskData[2]);
-			taskComp.Setup(taskID, taskName, quantity);
+			string taskName = taskData[0];
+			int quantity = int.Parse(taskData[1]);
+			taskComp.Setup(taskName, quantity);
 
-			string[] buildingNames = taskData[3].Split('-');
+			string[] buildingNames = taskData[2].Split('-');
 
 			for(int j = 0; j < buildingNames.Length; j++)
 			{
@@ -49,9 +48,8 @@ public class TaskController : MonoBehaviour
 			Task taskComp = taskObj.GetComponent<Task>();
 			taskObj.transform.SetParent(playerTasksParent.transform);
 			string[] taskData = taskDataList[randomNumbers[i]].Split(';');
-			int taskID = int.Parse(taskData[0]);
-			string taskName = taskData[1];
-			taskComp.Setup(taskID, taskName, -1);
+			string taskName = taskData[0];
+			taskComp.Setup(taskName, -1);
 			localPlayer.tasks.Add (taskComp);
 		}
 	}
