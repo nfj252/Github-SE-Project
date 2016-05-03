@@ -18,7 +18,7 @@ public class GameflowController : MonoBehaviour
 	TaskController taskController;
 
 	//Player Controller Stuff
-	public List<Player> players;
+	List<Player> players; 
 	int localPlayerID;
 	int remainingMoves;
 	bool turnHasBegun;
@@ -44,17 +44,16 @@ public class GameflowController : MonoBehaviour
 		inGameDBController.FetchRoomData ();
 		inGameDBController.FetchCurrentPlayerTurn ();
 
+		localPlayerID = 1; ///////////////////temp
 		players = new List<Player>();
 		CreatePlayers (inGameDBController.GetNumberOfPlayers ());
 		inGameDBController.FetchTaskData ();
 		taskController.AssignBuildingTasks (inGameDBController.GetTaskData(), buildingController.GetBuildings());
 		taskController.AssignLocalPlayerTasks (inGameDBController.GetTaskData (), GetLocalPlayer (), numberOfTasksToComplete);
-		orientationController.InitializeLPTaskLabels (GetLocalPlayer().tasks);
+		taskController.InitializeLPTaskLabels (GetLocalPlayer().tasks);
 
 		orientationController.ScaleUI ();
-		localPlayerID = 0; ///////////////////temp
 		tileController.SetLocalPlayerModelRef(players[localPlayerID].playerModel); ///////////////////temp
-
 
 		SetInitialCameraPosition ();
 		remainingMoves = 0;
@@ -97,7 +96,7 @@ public class GameflowController : MonoBehaviour
 
 	public void SetInitialCameraPosition()
 	{
-		Vector3 cameraPosition = GetLocalPlayer ().playerModel.transform.localPosition;
+		Vector3 cameraPosition = tileController.ConvertLocationToPosition(GetLocalPlayer ().destinationLocation);
 		cameraPosition += new Vector3 (0, Camera.main.transform.localPosition.y, 0);
 		Camera.main.transform.localPosition = cameraPosition;
 	}
@@ -110,10 +109,12 @@ public class GameflowController : MonoBehaviour
 
 	public bool GetIsLocalPlayerTurn()
 	{
-		if (inGameDBController.GetCurrentPTurn () == localPlayerID)
-			return true;
-		else
-			return false;
+		return inGameDBController.GetCurrentPTurn () == localPlayerID;
+	}
+
+	public bool GetIsLPOnBuildingEntrance()
+	{
+		return tileController.GetTile ((int)GetLocalPlayer ().location.x, (int)GetLocalPlayer ().location.y).tileType == "Entrance";		
 	}
 
 	public Player GetCurrentPlayer()
@@ -144,7 +145,9 @@ public class GameflowController : MonoBehaviour
 
 		orientationController.SetMovesLabel ("Roll First");
 		orientationController.SetRollDiceButtonStatus (true);
-		orientationController.SetEndTurnButtonStatus (true);
+
+		if (GetIsLPOnBuildingEntrance())
+			orientationController.SetEnterBuildingButtonStatus (true);
 
 		tileController.SetCanLightUpTile (true);
 		SetInitialCameraPosition ();
@@ -156,6 +159,7 @@ public class GameflowController : MonoBehaviour
 		remainingMoves = (int)Random.Range (1, 7);
 		orientationController.SetMovesLabel (remainingMoves.ToString());
 		orientationController.SetRollDiceButtonStatus (false);
+		orientationController.SetEndTurnButtonStatus (true);
 		StartCoroutine (orientationController.DelayedSetCanMovePlayer (true));
 	}
 
@@ -168,6 +172,8 @@ public class GameflowController : MonoBehaviour
 		orientationController.SetRollDiceButtonStatus (false);
 		orientationController.SetEnterBuildingButtonStatus (false);
 		orientationController.SetEndTurnButtonStatus (false);
+		if(orientationController.buildingTasksPanel.alpha != 0)
+			orientationController.ToggleBuildingTasksPanel ();
 		tileController.SetCanLightUpTile (false);
 	}
 	
@@ -179,15 +185,20 @@ public class GameflowController : MonoBehaviour
 			timer = 0f;
 			StartCoroutine(inGameDBController.FetchCurrentPlayerTurnCo());
 			StartCoroutine(inGameDBController.FetchPlayerLocationsCo());
+
 			for(int i = 0; i < players.Count; i++)
 			{
 				players[i].location = inGameDBController.GetPlayerLocation(i);
 				players[i].MoveModel(inGameDBController.GetPlayerLocation(i));
 			}
 
-			if(!turnHasBegun && GetIsLocalPlayerTurn())
+			if(GetIsLocalPlayerTurn())
 			{
-				BeginTurn();
+				if (!turnHasBegun) 
+					BeginTurn();
+
+				if(GetIsLPOnBuildingEntrance())
+					StartCoroutine(taskController.UpdateBuildingTaskDataLabels(inGameDBController.GetTaskData()));
 			}
 		}
 	}

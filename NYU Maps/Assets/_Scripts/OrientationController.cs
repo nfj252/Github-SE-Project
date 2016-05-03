@@ -16,29 +16,23 @@ public class OrientationController : MonoBehaviour
 	public UILabel movesLabel;
 	public UIButton rollDiceButton;
 	public UIButton enterBuildingButton;
-	public UILabel enterBuildingButtonLabel;
 	public UIButton endTurnButton;
 
-	public GameObject lpTaskLabelParent;
-	public GameObject lpTaskLabelPrefab;
 	public UILabel lpTaskButtonLabel;
-
-	public UILabel buildingPanelTitleLabel;
-	public GameObject[] buildingTaskPrefabs;
-	public UILabel[] buildingTaskNameLabels;
-	public UILabel[] buildingTaskQuantityLabels;
-	public UIButton[] buildingTaskCompleteButtons;
+	public UILabel enterBuildingButtonLabel;
 
 	bool canMovePlayer;
 
 	public void ScaleUI () 
 	{
 		float mainUIScaler = (float)Screen.height / mainUIPanelBackdrop.height;
-
+		float xShiftToCenterValue = mainUIPanelBackdrop.width * mainUIScaler /2;
 		mainUIScalerContainer.transform.localScale = new Vector3 (mainUIScaler, mainUIScaler, 1);
 		mainUIScalerContainer.transform.localPosition = new Vector3 (-mainUIPanelBackdrop.width*mainUIScaler/2,0,0);
 		ipTasksScalerContainer.transform.localScale = new Vector3 (mainUIScaler, mainUIScaler, 1);
+		ipTasksScalerContainer.transform.localPosition = new Vector3 (-xShiftToCenterValue, 0, 0);
 		buildingTasksScalerContainer.transform.localScale = new Vector3 (mainUIScaler, mainUIScaler, 1);
+		buildingTasksScalerContainer.transform.localPosition = new Vector3 (-xShiftToCenterValue, 0, 0);
 	}
 
 	public void SetMovesLabel(string content)
@@ -61,81 +55,36 @@ public class OrientationController : MonoBehaviour
 		CustomSetUIButtonState (enterBuildingButton, status);
 	}
 
-	public void InitializeLPTaskLabels (List<Task> tasks)
-	{
-		for(int i = 0; i < tasks.Count; i++)
-		{
-			GameObject taskLabel = GameObject.Instantiate(lpTaskLabelPrefab);
-			taskLabel.transform.SetParent(lpTaskLabelParent.transform);
-			taskLabel.name = tasks[i].taskName + " Label";
-			taskLabel.GetComponent<UILabel>().text = tasks[i].taskName;
-			tasks[i].label = taskLabel.GetComponent<UILabel>();
-			taskLabel.transform.localScale = new Vector3(1,1,1);
-			taskLabel.transform.localPosition = new Vector3(0,-i * (taskLabel.GetComponent<UILabel>().height),0);
-		}
-	}
-
-	public void PrepareBuildingTaskLabels (Player localPlayer, Building building)
-	{
-		for(int i = 0; i < buildingTaskPrefabs.Length; i++)
-		{
-			if(i < building.availableTasks.Count)
-			{
-				buildingTaskPrefabs[i].SetActive(true);
-				buildingTaskNameLabels[i].text = building.availableTasks[i].taskName;
-				buildingTaskQuantityLabels[i].text = building.availableTasks[i].quantity.ToString();
-				for(int j = 0; j < localPlayer.tasks.Count; j++)
-				{
-					if(localPlayer.tasks[j].taskName.Equals(building.availableTasks[i].taskName))
-					{
-						CustomSetUIButtonState(buildingTaskCompleteButtons[i], true);
-						break;
-					}
-					else
-						CustomSetUIButtonState(buildingTaskCompleteButtons[i], false);
-
-				}
-			}
-			else
-				buildingTaskPrefabs[i].SetActive(false);
-		}
-	}
-
 	public void ToggleLPTasksPanel()
 	{
-		SetCanMovePlayer (false);
 		if(lpTasksPanel.alpha == 0)
 		{
+			canMovePlayer = false;
 			lpTaskButtonLabel.text = "Hide Tasks";
 			lpTasksPanel.GetComponent<TweenAlpha>().PlayForward();
 		}
 		else
 		{
+			canMovePlayer = true;
 			lpTaskButtonLabel.text = "Show Tasks";
 			lpTasksPanel.GetComponent<TweenAlpha>().PlayReverse();
 		}
-		StartCoroutine (DelayedSetCanMovePlayer (true));
 	}
 
 	public void ToggleBuildingTasksPanel()
 	{
-		SetCanMovePlayer (false);
 		if(buildingTasksPanel.alpha == 0)
 		{
+			canMovePlayer = false;
 			enterBuildingButtonLabel.text = "Exit Building";
 			buildingTasksPanel.GetComponent<TweenAlpha>().PlayForward();
 		}
 		else
 		{
+			canMovePlayer = true;
 			enterBuildingButtonLabel.text = "Enter Building";
 			buildingTasksPanel.GetComponent<TweenAlpha>().PlayReverse();
 		}
-		StartCoroutine (DelayedSetCanMovePlayer (true));
-	}
-
-	public void SetBuildingPanelTitle(string buildingName)
-	{
-		buildingPanelTitleLabel.text = buildingName;
 	}
 
 	public bool GetCanMovePlayer()
@@ -156,7 +105,7 @@ public class OrientationController : MonoBehaviour
 		yield return null;
 	}
 
-	void CustomSetUIButtonState(UIButton button, bool state)
+	public void CustomSetUIButtonState(UIButton button, bool state)
 	{
 		button.enabled = state;	
 		if(state)
@@ -164,4 +113,6 @@ public class OrientationController : MonoBehaviour
 		else
 			button.SetState(UIButtonColor.State.Disabled, true);
 	}
+
+	
 }

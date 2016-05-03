@@ -12,7 +12,7 @@ public class TileController : MonoBehaviour
 	public Color redColor;
 	public Color blueColor;
 	public Color greenColor;
-	public List<Tile> tilesContainer;  //temp public
+	List<Tile> tilesContainer;  
 
 	Vector2 gridSize;
 	bool canLightUp;
@@ -22,6 +22,7 @@ public class TileController : MonoBehaviour
 	public void Setup()
 	{
 		canLightUp = false;
+		tilesContainer = new List<Tile>();
 		litContainer = new List<Tile>();
 	}
 
@@ -85,12 +86,12 @@ public class TileController : MonoBehaviour
 				tileInstance.transform.parent = tilesParent.transform;
 				tileInstance.transform.localPosition = new Vector3(j, 0, i);
 				tileInstance.GetComponent<Tile>().TileSetup(j, i, "None", tileInstance);
-				tilesContainer.Add(tileInstance.GetComponent<Tile>());
+ 				tilesContainer.Add(tileInstance.GetComponent<Tile>());
 			}
 		}
 		mapBackdrop.transform.localScale = new Vector3 (gridSize.x, gridSize.y, 1);
 		mapBackdrop.transform.localPosition = new Vector3 (gridSize.x/2 - .5f, mapBackdrop.transform.localPosition.y, gridSize.y/2 - .5f);
-		cameraParent.transform.localPosition = mapBackdrop.transform.localPosition;
+		//cameraParent.transform.localPosition = mapBackdrop.transform.localPosition;
 		Camera.main.transform.SetParent (cameraParent.transform);
 	}
 

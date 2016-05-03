@@ -11,6 +11,7 @@ public class TouchInputController : MonoBehaviour
 	InGameDBController inGameDBController;
 	TileController tileController;
 	OrientationController orientationController;
+	TaskController taskController;
 	enum layerValues {tile = 8};
 	List<GameObject> touchList = new List<GameObject>();
 	List<GameObject> touchesOld;
@@ -25,6 +26,7 @@ public class TouchInputController : MonoBehaviour
 		inGameDBController = FindObjectOfType<InGameDBController> ();
 		tileController = FindObjectOfType<TileController> ();
 		orientationController = FindObjectOfType<OrientationController> ();
+		taskController = FindObjectOfType<TaskController> ();
 	}
 
 	void Update () 
@@ -74,9 +76,9 @@ public class TouchInputController : MonoBehaviour
 									inGameDBController.MovePlayer(gameFlowController.GetLocalPlayerID(),recipient.GetComponent<Tile>().location);
 									if(recipient.GetComponent<Tile>().tileType == "Entrance")
 									{
-										orientationController.SetBuildingPanelTitle(recipient.GetComponent<Tile>().building.buildingName);
+										taskController.SetBuildingPanelTitle(recipient.GetComponent<Tile>().building.buildingName);
 										orientationController.SetEnterBuildingButtonStatus(true);
-										orientationController.PrepareBuildingTaskLabels(gameFlowController.GetLocalPlayer(), recipient.GetComponent<Tile>().building);
+										taskController.SetVisitedBuilding(recipient.GetComponent<Tile>().building);
 									}
 									else
 										orientationController.SetEnterBuildingButtonStatus(false);
@@ -145,9 +147,9 @@ public class TouchInputController : MonoBehaviour
 										inGameDBController.MovePlayer(gameFlowController.GetLocalPlayerID(),recipient.GetComponent<Tile>().location); 
 										if(recipient.GetComponent<Tile>().tileType == "Entrance")
 										{
-											orientationController.SetBuildingPanelTitle(recipient.GetComponent<Tile>().building.buildingName);
+											taskController.SetBuildingPanelTitle(recipient.GetComponent<Tile>().building.buildingName);
 											orientationController.SetEnterBuildingButtonStatus(true);
-											orientationController.PrepareBuildingTaskLabels(gameFlowController.GetLocalPlayer(), recipient.GetComponent<Tile>().building);
+											taskController.SetVisitedBuilding(recipient.GetComponent<Tile>().building);
 										}
 										else
 											orientationController.SetEnterBuildingButtonStatus(false);

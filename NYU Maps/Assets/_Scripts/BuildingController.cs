@@ -8,12 +8,12 @@ public class BuildingController : MonoBehaviour
 	public GameObject buildingParent;
 	public GameObject buildingPrefab;
 	public Material entranceTileMat;
-	public List<Building> buildings;  //temp public
+	List<Building> buildings;  
 
 	public void Setup()
 	{
-		tileController = FindObjectOfType<TileController>();
-		buildings = new List<Building>();
+		tileController = FindObjectOfType<TileController> ();
+		buildings = new List<Building> ();
 	}
 
 	public void CreateBuildings(List<string> buildingDataList)

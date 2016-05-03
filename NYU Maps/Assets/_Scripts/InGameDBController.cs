@@ -15,8 +15,8 @@ public class InGameDBController : MonoBehaviour
 	int currentPlayerTurn;
 	
 	Vector2 gridSize;
-	List<string> buildingData;
-	List<string> taskData;
+	List<string> buildingInitializationData;
+	List<string> taskInitializationData;
 
 	NpgsqlConnection dbcon;
 	NpgsqlCommand dbcmd;
@@ -26,8 +26,8 @@ public class InGameDBController : MonoBehaviour
 	{
 		playerNames = new List<string>();
 		playerLocations = new List<Vector2>();
-		buildingData = new List<string>();
-		taskData = new List<string>();
+		buildingInitializationData = new List<string>();
+		taskInitializationData = new List<string>();
 	}
 
 	public void StartConnection () 
@@ -75,8 +75,8 @@ public class InGameDBController : MonoBehaviour
 		reader = dbcmd.ExecuteReader();
 		while(reader.Read()) 
 		{
-			buildingData.Add(reader.GetString(0) + ";" + reader.GetString(1) + ";" + reader.GetString(2) + ";" + 
-			                 reader.GetString(3) + ";" + reader.GetString(4) + ";" + reader.GetString(5) + ";" + reader.GetString(6));
+			buildingInitializationData.Add(reader.GetString(0) + ";" + reader.GetString(1) + ";" + reader.GetString(2) + ";" + 
+			                               reader.GetString(3) + ";" + reader.GetString(4) + ";" + reader.GetString(5) + ";" + reader.GetString(6));
 		}
 		CleanUpSQLVariables ();
 	}
@@ -119,11 +119,12 @@ public class InGameDBController : MonoBehaviour
 
 	public void FetchTaskData()
 	{
+		taskInitializationData.Clear ();
 		dbcmd = dbcon.CreateCommand();
 		dbcmd.CommandText =  string.Format ("SELECT taskname, quantity, buildingname from ingametask");
 		reader = dbcmd.ExecuteReader();
 		while(reader.Read()) 
-			taskData.Add(reader.GetString(0) + ";" + reader.GetInt32(1) + ";" + reader.GetString(2));
+			taskInitializationData.Add(reader.GetString(0) + ";" + reader.GetInt32(1) + ";" + reader.GetString(2));
 		CleanUpSQLVariables ();
 	}
 
@@ -136,6 +137,15 @@ public class InGameDBController : MonoBehaviour
 		dbcmd = dbcon.CreateCommand();
 		dbcmd.CommandText =  string.Format ("UPDATE ingameroom SET currentturn = '{0}' WHERE roomid = '{1}';", 
 		                                    (int)currentPlayerTurn, (int)gameID);
+		reader = dbcmd.ExecuteReader();
+		CleanUpSQLVariables ();
+	}
+
+	public void DecrementBuildingTaskQuantity(string buildingTaskName)
+	{
+		Debug.Log ("Decrementing" + buildingTaskName);
+		dbcmd = dbcon.CreateCommand(); 
+		dbcmd.CommandText = string.Format ("UPDATE ingametask SET quantity = quantity - 1 WHERE taskname = '{0}'", buildingTaskName);
 		reader = dbcmd.ExecuteReader();
 		CleanUpSQLVariables ();
 	}
@@ -182,12 +192,12 @@ public class InGameDBController : MonoBehaviour
 
 	public List<string> GetBuildingData()
 	{
-		return buildingData;
+		return buildingInitializationData;
 	}
 
 	public List<string> GetTaskData()
 	{
-		return taskData;
+		return taskInitializationData;
 	}
 
 	void CleanUpSQLVariables()
