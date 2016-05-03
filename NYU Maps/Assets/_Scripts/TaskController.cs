@@ -70,7 +70,7 @@ public class TaskController : MonoBehaviour
 		}
 	}
 
-	public List<int> GenerateRandomNumbers(int range, int quantity) 
+	List<int> GenerateRandomNumbers(int range, int quantity) 
 	{
 		List<int> numbers = new List<int>();
 		int randomNumber = 0;
@@ -114,7 +114,6 @@ public class TaskController : MonoBehaviour
 		return visitedBuilding;
 	}
 
-	//Create Button To Fetch Task Latest Data For Building thne display the shet
 	void PrepareBuildingTaskLabels ()
 	{
 		for(int i = 0; i < buildingTaskPrefabs.Length; i++)
@@ -129,7 +128,7 @@ public class TaskController : MonoBehaviour
 					buildingTaskQuantityLabels[i].text = visitedBuilding.availableTasks[i].quantity.ToString();
 				for(int j = 0; j < gameFlowController.GetLocalPlayer().tasks.Count; j++)
 				{
-					if(gameFlowController.GetLocalPlayer().tasks[j].taskName.Equals(visitedBuilding.availableTasks[i].taskName))
+					if(gameFlowController.GetLocalPlayer().tasks[j].taskName.Equals(visitedBuilding.availableTasks[i].taskName) && !gameFlowController.GetLocalPlayer().tasks[j].completed)
 					{
 						orientationController.CustomSetUIButtonState(buildingTaskCompleteButtons[i], true);
 						break;
@@ -143,9 +142,8 @@ public class TaskController : MonoBehaviour
 		}
 	}
 
-	public IEnumerator UpdateBuildingTaskDataLabels(List<string> taskDataList)
+	public IEnumerator UpdateBuildingTaskQuantityLabels(List<string> taskDataList)
 	{
-		Debug.Log ("UpdateBuildingTaskDataLabels");
 		inGameDBController.FetchTaskData ();
 		for(int i = 0; i < taskDataList.Count; i++)
 		{
@@ -167,20 +165,24 @@ public class TaskController : MonoBehaviour
 				}
 			}
 		}
-
 		yield return null;
 	}
-
-
+	
 	public void CompleteBuildingTask(string taskNumber)
 	{
-		int number = int.Parse (taskNumber);
-		if(visitedBuilding.availableTasks[number].quantity > 0)
+		int itemNumber = int.Parse (taskNumber);
+		string itemName = visitedBuilding.availableTasks[itemNumber].taskName;
+		if(visitedBuilding.availableTasks[itemNumber].quantity > 0)
+			inGameDBController.DecrementBuildingTaskQuantity (itemName);
+		orientationController.CustomSetUIButtonState (buildingTaskCompleteButtons [itemNumber], false);
+		for(int i = 0; i < gameFlowController.GetLocalPlayer().tasks.Count; i++)
 		{
-			string taskName = visitedBuilding.availableTasks[number].taskName;
-			Debug.Log (taskName);
-			inGameDBController.DecrementBuildingTaskQuantity (taskName);
+			if(gameFlowController.GetLocalPlayer().tasks[i].taskName.Equals (itemName))
+			{
+				gameFlowController.GetLocalPlayer().tasks[i].completed = true;
+				//turn player task green
+				break;
+			}
 		}
-		orientationController.CustomSetUIButtonState (buildingTaskCompleteButtons [number], false);
 	}
 }

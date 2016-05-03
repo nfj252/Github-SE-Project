@@ -198,7 +198,7 @@ public class GameflowController : MonoBehaviour
 					BeginTurn();
 
 				if(GetIsLPOnBuildingEntrance())
-					StartCoroutine(taskController.UpdateBuildingTaskDataLabels(inGameDBController.GetTaskData()));
+					StartCoroutine(taskController.UpdateBuildingTaskQuantityLabels(inGameDBController.GetTaskData()));
 			}
 		}
 	}
