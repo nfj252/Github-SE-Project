@@ -12,16 +12,21 @@ public class TaskController : MonoBehaviour
 	public GameObject buildingTasksParent;
 	public GameObject playerTasksParent;
 	public GameObject taskPrefab;
-	public GameObject lpTaskLabelParent;
-	public GameObject lpTaskLabelPrefab;
-	public UILabel buildingTasksPanelTitleLabel;
 
+	public GameObject lpTaskLabelParent;
+
+	public UILabel buildingTasksPanelTitleLabel;
 	public GameObject[] buildingTaskPrefabs;
 	public UILabel[] buildingTaskNameLabels;
 	public UILabel[] buildingTaskQuantityLabels;
 	public UIButton[] buildingTaskCompleteButtons;
 
+	public GameObject[] playerTaskPrefabs;
+	public UILabel[] playerTaskNameLabels;
+
 	Building visitedBuilding;
+
+
 
 	public void Setup () 
 	{
@@ -55,10 +60,10 @@ public class TaskController : MonoBehaviour
 		}
 	}
 
-	public void AssignLocalPlayerTasks(List<string> taskDataList, Player localPlayer, int numOfTasks)
+	public void AssignLocalPlayerTasks(List<string> taskDataList, Player localPlayer)
 	{
-		List<int> randomNumbers = GenerateRandomNumbers (taskDataList.Count - 1, numOfTasks);
-		for(int i = 0; i < numOfTasks; i++)
+		List<int> randomNumbers = GenerateRandomNumbers (taskDataList.Count - 1, playerTaskPrefabs.Length);
+		for(int i = 0; i < playerTaskPrefabs.Length; i++)
 		{
 			GameObject taskObj = Instantiate(taskPrefab);
 			Task taskComp = taskObj.GetComponent<Task>();
@@ -92,15 +97,7 @@ public class TaskController : MonoBehaviour
 	public void InitializeLPTaskLabels (List<Task> tasks)
 	{
 		for(int i = 0; i < tasks.Count; i++)
-		{
-			GameObject taskLabel = GameObject.Instantiate(lpTaskLabelPrefab);
-			taskLabel.transform.SetParent(lpTaskLabelParent.transform);
-			taskLabel.name = tasks[i].taskName + " Label";
-			taskLabel.GetComponent<UILabel>().text = tasks[i].taskName;
-			tasks[i].label = taskLabel.GetComponent<UILabel>();
-			taskLabel.transform.localScale = new Vector3(1,1,1);
-			taskLabel.transform.localPosition = new Vector3(0,-i * (taskLabel.GetComponent<UILabel>().height),0);
-		}
+			playerTaskNameLabels[i].text = tasks[i].taskName;
 	}
 
 	public void SetVisitedBuilding(Building currentBuilding)
@@ -158,6 +155,9 @@ public class TaskController : MonoBehaviour
 						if(buildingTaskNameLabels[k].text.Equals(row[0]))
 						{
 							buildingTaskQuantityLabels[k].text = row[1];
+							if(buildingTaskQuantityLabels[k].text.Equals("-1"))
+								buildingTaskQuantityLabels[k].text = "N/A";
+
 							break;
 						}
 					}
@@ -180,7 +180,7 @@ public class TaskController : MonoBehaviour
 			if(gameFlowController.GetLocalPlayer().tasks[i].taskName.Equals (itemName))
 			{
 				gameFlowController.GetLocalPlayer().tasks[i].completed = true;
-				//turn player task green
+				playerTaskNameLabels[i].color = Color.green;
 				break;
 			}
 		}

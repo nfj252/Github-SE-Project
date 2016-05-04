@@ -6,10 +6,9 @@ public class GameflowController : MonoBehaviour
 {
 	//public GameObject introSceneLeftover;  //will hold user localname from intro scene
 	public GameObject playersParent;
-	public GameObject playerPrefab;
+	public GameObject[] playerPrefabs;
 	public float timerRefreshRate;
 	public float playerModelMoveSpeed;
-	public int numberOfTasksToComplete;
 
 	TileController tileController;
 	BuildingController buildingController;
@@ -49,7 +48,7 @@ public class GameflowController : MonoBehaviour
 		CreatePlayers (inGameDBController.GetNumberOfPlayers ());
 		inGameDBController.FetchTaskData ();
 		taskController.AssignBuildingTasks (inGameDBController.GetTaskData(), buildingController.GetBuildings());
-		taskController.AssignLocalPlayerTasks (inGameDBController.GetTaskData (), GetLocalPlayer (), numberOfTasksToComplete);
+		taskController.AssignLocalPlayerTasks (inGameDBController.GetTaskData (), GetLocalPlayer ());
 		taskController.InitializeLPTaskLabels (GetLocalPlayer().tasks);
 
 		orientationController.ScaleUI ();
@@ -66,6 +65,7 @@ public class GameflowController : MonoBehaviour
 
 		if(GetIsLocalPlayerTurn())
 			BeginTurn();
+
 		timer = 0;
 	}
 
@@ -73,7 +73,7 @@ public class GameflowController : MonoBehaviour
 	{
 		for(int i = 0; i < numberOfPlayers; i++)
 		{
-			GameObject tempPlayerModel = Instantiate (playerPrefab);
+			GameObject tempPlayerModel = Instantiate (playerPrefabs[i]);
 			Player tempPlayer = tempPlayerModel.GetComponent<Player>();
 			tempPlayer.smoothTime = playerModelMoveSpeed;
 			tempPlayer.playerName = inGameDBController.GetPlayerName(i);
@@ -147,7 +147,10 @@ public class GameflowController : MonoBehaviour
 		orientationController.SetRollDiceButtonStatus (true);
 
 		if (GetIsLPOnBuildingEntrance())
+		{
+			taskController.SetVisitedBuilding(tileController.GetTile((int)GetLocalPlayer().location.x, (int)GetLocalPlayer().location.y).building);
 			orientationController.SetEnterBuildingButtonStatus (true);
+		}
 
 		tileController.SetCanLightUpTile (true);
 		SetInitialCameraPosition ();
