@@ -25,9 +25,7 @@ public class TaskController : MonoBehaviour
 	public UILabel[] playerTaskNameLabels;
 
 	Building visitedBuilding;
-
-
-
+	
 	public void Setup () 
 	{
 		gameFlowController = FindObjectOfType<GameflowController> ();
@@ -181,8 +179,11 @@ public class TaskController : MonoBehaviour
 			{
 				gameFlowController.GetLocalPlayer().tasks[i].completed = true;
 				playerTaskNameLabels[i].color = Color.green;
+
+
 				break;
 			}
 		}
+		gameFlowController.CheckandSetIfLPWon();
 	}
 }

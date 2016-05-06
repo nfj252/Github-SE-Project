@@ -18,7 +18,8 @@ public class GameflowController : MonoBehaviour
 
 	//Player Controller Stuff
 	List<Player> players; 
-	int localPlayerID;
+	int localPlayerPID;
+	int localPlayerTurnID;
 	int remainingMoves;
 	bool turnHasBegun;
 
@@ -40,10 +41,14 @@ public class GameflowController : MonoBehaviour
 		tileController.CreateGrid (inGameDBController.GetGridSize());
 		inGameDBController.FetchBuildingData ();
 		buildingController.CreateBuildings (inGameDBController.GetBuildingData());
+		inGameDBController.SetGameID (1);
 		inGameDBController.FetchRoomData ();
 		inGameDBController.FetchCurrentPlayerTurn ();
 
-		localPlayerID = 1; ///////////////////temp
+
+		localPlayerPID = 45; ////temp
+		localPlayerTurnID = 1; ///////////////////temp
+
 		players = new List<Player>();
 		CreatePlayers (inGameDBController.GetNumberOfPlayers ());
 		inGameDBController.FetchTaskData ();
@@ -52,7 +57,7 @@ public class GameflowController : MonoBehaviour
 		taskController.InitializeLPTaskLabels (GetLocalPlayer().tasks);
 
 		orientationController.ScaleUI ();
-		tileController.SetLocalPlayerModelRef(players[localPlayerID].playerModel); ///////////////////temp
+		tileController.SetLocalPlayerModelRef(players[localPlayerTurnID].playerModel); ///////////////////temp
 
 		SetInitialCameraPosition ();
 		remainingMoves = 0;
@@ -101,15 +106,20 @@ public class GameflowController : MonoBehaviour
 		Camera.main.transform.localPosition = cameraPosition;
 	}
 
-	public int GetLocalPlayerID()
+	public int GetLocalPlayerTurnID()
 	{
-		Debug.Log ("LocalPlayerID: " + localPlayerID);
-		return localPlayerID;
+		Debug.Log ("LocalPlayerTurnID: " + localPlayerTurnID);
+		return localPlayerTurnID;
+	}
+
+	public int GetLocalPlayerPID()
+	{
+		return localPlayerPID;
 	}
 
 	public bool GetIsLocalPlayerTurn()
 	{
-		return inGameDBController.GetCurrentPTurn () == localPlayerID;
+		return inGameDBController.GetCurrentPTurn () == localPlayerTurnID;
 	}
 
 	public bool GetIsLPOnBuildingEntrance()
@@ -129,7 +139,7 @@ public class GameflowController : MonoBehaviour
 
 	public Player GetLocalPlayer()
 	{
-		return players [localPlayerID];
+		return players [localPlayerTurnID];
 	}
 
 	public void SetRemainingMoves(int val)
@@ -170,7 +180,6 @@ public class GameflowController : MonoBehaviour
 	{
 		inGameDBController.IncrementPTurn ();
 		turnHasBegun = false;
-		//update GUI and tapping - disable
 		orientationController.SetMovesLabel ("Wait Your Turn");
 		orientationController.SetRollDiceButtonStatus (false);
 		orientationController.SetEnterBuildingButtonStatus (false);
@@ -179,29 +188,53 @@ public class GameflowController : MonoBehaviour
 			orientationController.ToggleBuildingTasksPanel ();
 		tileController.SetCanLightUpTile (false);
 	}
-	
+
+	public void CheckandSetIfLPWon()
+	{
+		for(int i = 0; i < GetLocalPlayer().tasks.Count; i++)
+		{
+			if(!GetLocalPlayer().tasks[i].completed)
+				break;
+			else
+			{
+				if(i == GetLocalPlayer().tasks.Count - 1)
+					inGameDBController.SetWinner(localPlayerPID);
+			}
+		}
+	}
+
 	void Update () 
 	{
-		timer += Time.deltaTime;
-		if(timer >= timerRefreshRate)
+		if(inGameDBController.GetWinnerPID().Equals(-1))
 		{
-			timer = 0f;
-			StartCoroutine(inGameDBController.FetchCurrentPlayerTurnCo());
-			StartCoroutine(inGameDBController.FetchPlayerLocationsCo());
-
-			for(int i = 0; i < players.Count; i++)
+			timer += Time.deltaTime;
+			if(timer >= timerRefreshRate)
 			{
-				players[i].location = inGameDBController.GetPlayerLocation(i);
-				players[i].MoveModel(inGameDBController.GetPlayerLocation(i));
-			}
+				timer = 0f;
+				StartCoroutine(inGameDBController.FetchCurrentPlayerTurnCo());
+				StartCoroutine(inGameDBController.FetchPlayerLocationsCo());
 
-			if(GetIsLocalPlayerTurn())
-			{
-				if (!turnHasBegun) 
-					BeginTurn();
+				for(int i = 0; i < players.Count; i++)
+				{
+					players[i].location = inGameDBController.GetPlayerLocation(i);
+					players[i].MoveModel(inGameDBController.GetPlayerLocation(i));
+				}
 
-				if(GetIsLPOnBuildingEntrance())
-					StartCoroutine(taskController.UpdateBuildingTaskQuantityLabels(inGameDBController.GetTaskData()));
+				if(GetIsLocalPlayerTurn())
+				{
+					if (!turnHasBegun) 
+						BeginTurn();
+
+					if(GetIsLPOnBuildingEntrance())
+						StartCoroutine(taskController.UpdateBuildingTaskQuantityLabels(inGameDBController.GetTaskData()));
+				}
+
+				if(!inGameDBController.GetWinnerPID().Equals(-1))
+				{
+					inGameDBController.FetchWinnerPlayerName();
+					orientationController.SetWinnerLabel(inGameDBController.GetWinnerName());
+					orientationController.ShowWinnerDisplayPanel();
+				}
 			}
 		}
 	}

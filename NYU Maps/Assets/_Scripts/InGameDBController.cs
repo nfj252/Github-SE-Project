@@ -13,6 +13,8 @@ public class InGameDBController : MonoBehaviour
 	List<string> playerNames;
 	List<Vector2> playerLocations;
 	int currentPlayerTurn;
+	int winnerPID;
+	String winnerName;
 	
 	Vector2 gridSize;
 	List<string> buildingInitializationData;
@@ -28,6 +30,7 @@ public class InGameDBController : MonoBehaviour
 		playerLocations = new List<Vector2>();
 		buildingInitializationData = new List<string>();
 		taskInitializationData = new List<string>();
+		winnerPID = -1;
 	}
 
 	public void StartConnection () 
@@ -44,9 +47,8 @@ public class InGameDBController : MonoBehaviour
 
 	public void FetchRoomData()
 	{
-		gameID = 1;  //temp
-
 		dbcmd = dbcon.CreateCommand();
+		Debug.Log (gameID);
 		dbcmd.CommandText =  string.Format ("SELECT ign, xcoord, ycoord FROM ingameplayer WHERE roomid = '{0}' ORDER BY turnid ASC;", gameID);
 		reader = dbcmd.ExecuteReader();
 		while(reader.Read()) 
@@ -55,6 +57,7 @@ public class InGameDBController : MonoBehaviour
 			playerLocations.Add (new Vector2 ((reader.GetInt32(1)), reader.GetInt32(2)));  
 		}
 		numberOfPlayers = playerNames.Count; 
+		Debug.Log (numberOfPlayers);
 		CleanUpSQLVariables ();
 	}
 
@@ -128,6 +131,16 @@ public class InGameDBController : MonoBehaviour
 		CleanUpSQLVariables ();
 	}
 
+	public void FetchWinnderPID()
+	{
+		dbcmd = dbcon.CreateCommand();
+		dbcmd.CommandText =  string.Format ("SELECT winner FROM ingameroom");
+		reader = dbcmd.ExecuteReader();
+		reader.Read (); 
+		winnerPID = reader.GetInt32(0);
+		CleanUpSQLVariables ();
+	}
+	
 	public void IncrementPTurn()
 	{
 		currentPlayerTurn++;
@@ -165,6 +178,34 @@ public class InGameDBController : MonoBehaviour
 		CleanUpSQLVariables ();
 	}
 
+	public void SetWinner(int localPlayerID)
+	{
+		dbcmd = dbcon.CreateCommand();
+		dbcmd.CommandText =  string.Format ("UPDATE ingameroom SET winner = '{0}';", localPlayerID);
+		reader = dbcmd.ExecuteReader();
+		CleanUpSQLVariables ();
+	}
+
+	public int GetWinnerPID()
+	{
+		return winnerPID;
+	}
+
+	public string GetWinnerName()
+	{
+		return winnerName;
+	}
+
+	public void FetchWinnerPlayerName()
+	{
+		dbcmd = dbcon.CreateCommand();
+		dbcmd.CommandText =  string.Format ("SELECT ign FROM users WHERE pid = '{0}';", winnerPID);
+		reader = dbcmd.ExecuteReader();
+		reader.Read ();
+		winnerName = reader.GetString (0);
+		CleanUpSQLVariables ();
+	}
+
 	public int GetCurrentPTurn()
 	{
 		return currentPlayerTurn;
@@ -199,6 +240,12 @@ public class InGameDBController : MonoBehaviour
 	{
 		return taskInitializationData;
 	}
+
+	public void SetGameID(int id)
+	{
+		gameID = id;
+	}
+
 
 	void CleanUpSQLVariables()
 	{

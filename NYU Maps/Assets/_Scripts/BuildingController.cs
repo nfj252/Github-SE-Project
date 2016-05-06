@@ -36,6 +36,7 @@ public class BuildingController : MonoBehaviour
 			int width = int.Parse(buildingData[5]);
 			int height = int.Parse(buildingData[6]);
 
+			Debug.Log (buildingName);
 			for(int j = 0; j < length; j++)
 			{
 				for(int k = 0; k < width; k++)

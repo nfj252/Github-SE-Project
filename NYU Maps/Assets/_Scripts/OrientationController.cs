@@ -6,12 +6,14 @@ public class OrientationController : MonoBehaviour
 {
 	public UIPanel lpTasksPanel;
 	public UIPanel buildingTasksPanel;
+	public UIPanel winnerDisplayPanel;
 
 	public UITexture mainUIPanelBackdrop;
 
 	public GameObject mainUIScalerContainer;
 	public GameObject ipTasksScalerContainer;
 	public GameObject buildingTasksScalerContainer;
+	public GameObject winnerDisplayScalerContainer;
 
 	public UILabel movesLabel;
 	public UIButton rollDiceButton;
@@ -20,6 +22,7 @@ public class OrientationController : MonoBehaviour
 
 	public UILabel lpTaskButtonLabel;
 	public UILabel enterBuildingButtonLabel;
+	public UILabel winnerDisplayLabel;
 
 	bool canMovePlayer;
 
@@ -33,6 +36,8 @@ public class OrientationController : MonoBehaviour
 		ipTasksScalerContainer.transform.localPosition = new Vector3 (-xShiftToCenterValue, 0, 0);
 		buildingTasksScalerContainer.transform.localScale = new Vector3 (mainUIScaler, mainUIScaler, 1);
 		buildingTasksScalerContainer.transform.localPosition = new Vector3 (-xShiftToCenterValue, 0, 0);
+		winnerDisplayScalerContainer.transform.localScale = new Vector3 (mainUIScaler, mainUIScaler, 1);
+		winnerDisplayScalerContainer.transform.localPosition = new Vector3 (-xShiftToCenterValue, 0, 0);
 	}
 
 	public void SetMovesLabel(string content)
@@ -87,6 +92,11 @@ public class OrientationController : MonoBehaviour
 		}
 	}
 
+	public void ShowWinnerDisplayPanel()
+	{
+		winnerDisplayPanel.GetComponent<TweenAlpha> ().PlayForward ();
+	}
+
 	public bool GetCanMovePlayer()
 	{
 		return canMovePlayer;
@@ -114,5 +124,10 @@ public class OrientationController : MonoBehaviour
 			button.SetState(UIButtonColor.State.Disabled, true);
 	}
 
-	
+	public void SetWinnerLabel(string name)
+	{
+		winnerDisplayLabel.text = name;
+	}
+
+
 }

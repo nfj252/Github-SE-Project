@@ -73,7 +73,7 @@ public class TouchInputController : MonoBehaviour
 							{
 								if(totalTileDistance <= gameFlowController.GetRemainingMoves())
 								{
-									inGameDBController.MovePlayer(gameFlowController.GetLocalPlayerID(),recipient.GetComponent<Tile>().location);
+									inGameDBController.MovePlayer(gameFlowController.GetLocalPlayerTurnID(),recipient.GetComponent<Tile>().location);
 									if(recipient.GetComponent<Tile>().tileType == "Entrance")
 									{
 										taskController.SetBuildingPanelTitle(recipient.GetComponent<Tile>().building.buildingName);
@@ -144,7 +144,7 @@ public class TouchInputController : MonoBehaviour
 								{
 									if(totalTileDistance <= gameFlowController.GetRemainingMoves())
 									{
-										inGameDBController.MovePlayer(gameFlowController.GetLocalPlayerID(),recipient.GetComponent<Tile>().location); 
+										inGameDBController.MovePlayer(gameFlowController.GetLocalPlayerTurnID(),recipient.GetComponent<Tile>().location); 
 										if(recipient.GetComponent<Tile>().tileType == "Entrance")
 										{
 											taskController.SetBuildingPanelTitle(recipient.GetComponent<Tile>().building.buildingName);
