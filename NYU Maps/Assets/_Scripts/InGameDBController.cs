@@ -49,7 +49,7 @@ public class InGameDBController : MonoBehaviour
 
 	public void InsertRoomData(List<string> insertNames, List<int> insertIDs)
 	{
-		numberOfPlayers = playerNames.Count; 
+		numberOfPlayers = insertNames.Count; 
 		playerNames = insertNames;
 		pids = insertIDs;
 

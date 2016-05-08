@@ -108,22 +108,14 @@ public class IntroController : MonoBehaviour {
 
 
 	}
-	void OnDestroy() {
-		Debug.Log("Killing intro connection");
-		if (dbcon != null) {
-			if (dbcon.State.ToString() != "Closed") {
-				dbcon.Close();
-				Debug.Log ("Successfully closed db connection");
-			}
-			dbcon.Dispose();
-		}
-	}
+
 	void OnApplicationQuit()
 	{
 		if (currentRoomID > 0) {
 			LeaveRoom();
 		}
 	}
+
 	void Update () {
 		timer += Time.deltaTime;
 		/*if(timer >= timeTilRefresh)
@@ -720,10 +712,6 @@ public class IntroController : MonoBehaviour {
 			dbcmd = new NpgsqlCommand (insertSQL, dbcon);
 			dbcmd.ExecuteNonQuery();
 			dbcmd.Dispose();
-
-			fillLists();
-
-		
 
 			startGameController.setTurnID (0);
 			startGameController.setRoomID (currentRoomID);
