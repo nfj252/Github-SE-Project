@@ -1,13 +1,14 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class StartGameID : MonoBehaviour {
-
+public class StartGameID : MonoBehaviour 
+{
 	int roomID;
 	int turnID;
 	int PID;
-	// Use this for initialization
-	void Start () {
+
+	void Start () 
+	{
 		DontDestroyOnLoad (this);
 		roomID = -1;
 		turnID = -1;
@@ -31,5 +32,20 @@ public class StartGameID : MonoBehaviour {
 		roomID = -1;
 		turnID = -1;
 		PID = -1; 
+	}
+
+	public int GetRoomID()
+	{
+		return roomID;
+	}
+
+	public int GetTurnID()
+	{
+		return turnID;
+	}
+
+	public int GetPID()
+	{
+		return PID;
 	}
 }

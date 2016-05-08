@@ -14,8 +14,9 @@ public class RoomID : MonoBehaviour {
 	
 	public void sendRoomIDToController()
 	{
-		introController.setCurrentRoomID(roomID);
+		//introController.setCurrentRoomID(roomID);
 		Debug.Log ("Sent to intro controller:currentRoomID" + roomID);
+		introController.JoinRoom (roomID);
 	}
 	
 	public void setRoomID(int value)

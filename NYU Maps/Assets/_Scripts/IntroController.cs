@@ -84,6 +84,7 @@ public class IntroController : MonoBehaviour {
 		registerContainer.transform.localScale = new Vector3(heightContainerScaler, heightContainerScaler, 1f);
 		prelobbyContainer.transform.localScale = new Vector3(heightContainerScaler, heightContainerScaler, 1f);
 		currentRoomContainer.transform.localScale = new Vector3(heightContainerScaler, heightContainerScaler, 1f);
+		createRoomContainer.transform.localScale = new Vector3(heightContainerScaler, heightContainerScaler, 1f);
 		
 		joinRoomButton.isEnabled = false;
 		joinRoomButton.UpdateColor(true);
@@ -110,18 +111,47 @@ public class IntroController : MonoBehaviour {
 		if (dbcon != null) {
 			if (dbcon.State.ToString() != "Closed") {
 				dbcon.Close();
+				Debug.Log ("Successfully closed db connection");
 			}
 			dbcon.Dispose();
 		}
 	}
+	void OnApplicationQuit()
+	{
+		if (currentRoomID > 0) {
+			LeaveRoom();
+		}
+	}
 	void Update () {
 		timer += Time.deltaTime;
-		if(timer >= timeTilRefresh)
+		/*if(timer >= timeTilRefresh)
 		{
 			timer = 0f;
-			StartCoroutine(ConsistentRefresh());
-		}
+			//StartCoroutine(ConsistentRefresh());
+			Refresh();
+		}*/
+		Refresh();
 		//StartCoroutine(consistentRefresh());
+	}
+
+	public bool gameHasStarted()
+	{
+		//Check if user exists
+		string selectSQL = string.Format ("SELECT game_is_ready,roomid FROM  playerroom WHERE game_is_ready = TRUE AND roomid = '{0}' ", currentRoomID);
+		NpgsqlCommand dbcmd = new NpgsqlCommand (selectSQL, dbcon);
+		NpgsqlDataReader reader = dbcmd.ExecuteReader();
+		if (reader.HasRows) {
+			if(reader.Read()){
+				reader.Close();
+				reader = null;
+				dbcmd.Dispose();
+				return true;
+			}
+		}
+		reader.Close();
+		reader = null;
+		dbcmd.Dispose();
+		return false;
 	}
 	public void GetSubmittedUsername()
 	{
@@ -204,22 +234,94 @@ public class IntroController : MonoBehaviour {
 		Debug.Log ("Password:" + password);
 		Debug.Log ("Password Reconfirm:" + passwordReconfirm);
 	}
+	public void Refresh()
+	{
+		//Debug.Log (currentRoomID);
+		if (currentRoomID <= 0) {
+			ShowRooms ();
+			//StartCoroutine(ShowRoomsCo);
+		}
+		else {
+			DisplayCurrentRoomPlayers ();
+			//StartCoroutine(DisplayCurrentRoomPlayersCo);
+			if(isHost)
+				startButtonUpdate ();
+			//StartCoroutine(StartButtonUpdateCo);
+			/*else{
+				if(currentRoomPlayerNameLabels[0].text == string.Empty){
+					Debug.Log ("Host left");
+					currentRoomID = -1;
+					HideCurrentGameRoomPanel();
+					ShowLobbyPanel();
+				}
+			}*/
+
+			if(gameHasStarted())
+			{
+				Application.LoadLevel("Main");
+			}
+		}
+	}
 	IEnumerator ConsistentRefresh()
 	{
 		yield return new WaitForEndOfFrame();
-		ShowRooms ();
-		if(currentRoomID > 0)
+		Debug.Log (currentRoomID);
+		if (currentRoomID <= 0) {
+			ShowRooms ();
+			//StartCoroutine(ShowRoomsCo);
+		}
+		else {
 			DisplayCurrentRoomPlayers ();
-		//startButtonUpdate ();
+			//StartCoroutine(DisplayCurrentRoomPlayersCo);
+			if(isHost)
+				startButtonUpdate ();
+				//StartCoroutine(StartButtonUpdateCo);
+			/*else{
+				if(currentRoomPlayerNameLabels[0].text == string.Empty){
+					Debug.Log ("Host left");
+					currentRoomID = -1;
+					HideCurrentGameRoomPanel();
+					ShowLobbyPanel();
+				}
+			}*/
+		}
 		yield return null;
 	}
-	public void DisplayCurrentRoomPlayers()
+	IEnumerator DisplayCurrentRoomPlayersCo()
 	{
+		yield return new WaitForEndOfFrame();
+		Debug.Log ("DisplayCurrentRoomPlayers() w/ roomid" + currentRoomID);
 		int rowsAffected = 0;
 		NpgsqlCommand dbcmd;
 		string selectSQL = string.Format ("SELECT ign FROM inroomstatus WHERE roomid = '{0}' LIMIT 4", currentRoomID);
 		dbcmd = new NpgsqlCommand (selectSQL, dbcon);
 		NpgsqlDataReader reader = dbcmd.ExecuteReader();
+		for (int i=0; i<currentRoomPlayerNameLabels.Length; i++) {
+			currentRoomPlayerNameLabels[i].text = string.Empty;
+		}
+		if (reader.HasRows) {
+			while(reader.Read())
+			{
+				currentRoomPlayerNameLabels[rowsAffected].text = (string)reader["ign"];
+				rowsAffected++;
+			}
+		}
+		reader.Close ();
+		reader = null;
+		dbcmd.Dispose ();
+		yield return null;
+	}
+	public void DisplayCurrentRoomPlayers()
+	{
+		//Debug.Log ("DisplayCurrentRoomPlayers() w/ roomid" + currentRoomID);
+		int rowsAffected = 0;
+		NpgsqlCommand dbcmd;
+		string selectSQL = string.Format ("SELECT ign FROM inroomstatus WHERE roomid = '{0}' ORDER BY turnid ASC LIMIT 4", currentRoomID);
+		dbcmd = new NpgsqlCommand (selectSQL, dbcon);
+		NpgsqlDataReader reader = dbcmd.ExecuteReader();
+		for (int i=0; i<currentRoomPlayerNameLabels.Length; i++) {
+			currentRoomPlayerNameLabels[i].text = string.Empty;
+		}
 		if (reader.HasRows) {
 			while(reader.Read())
 			{
@@ -240,7 +342,7 @@ public class IntroController : MonoBehaviour {
 		int rowsAffected = 0;
 		int roomCount = 0;
 		NpgsqlCommand dbcmd;
-		selectSQL = string.Format ("SELECT roomname,roomcount, roomid FROM playerroom ORDER BY roomid DESC LIMIT 6");
+		selectSQL = string.Format ("SELECT roomname,roomcount, roomid FROM playerroom WHERE game_is_ready = FALSE ORDER BY roomid DESC LIMIT 6");
 		dbcmd = new NpgsqlCommand (selectSQL, dbcon);
 		NpgsqlDataReader reader = dbcmd.ExecuteReader();
 		for(int i =0; i<rooms.Length; i++)
@@ -251,26 +353,26 @@ public class IntroController : MonoBehaviour {
 			numPlayersLabels[i].text = "0/4";
 			roomNumLabels[i].text = i + string.Empty;
 		}
-		while(reader.HasRows)
-		{
-			//Debug.Log ((string)reader["roomname"]);
-			reader.Read ();
-			roomName = (string)reader["roomname"];
-			roomCount = (int)reader["roomcount"];
-			roomID = (int)reader["roomid"];
-			//Debug.Log (roomName);
-			nameLabels[rowsAffected].text = roomName;
-			numPlayersLabels[rowsAffected].text = roomCount + "/4";
-			roomNumLabels[rowsAffected].text = roomID.ToString();
-			rooms[rowsAffected].GetComponent<RoomID>().setRoomID(roomID);
-			rooms[rowsAffected].GetComponent<RoomID>().setRoomCount(roomCount);
-			if(roomCount > 0 && roomCount <4){
-				rooms[rowsAffected].GetComponent<UIButton>().isEnabled = true;
-				rooms[rowsAffected].GetComponent<UIButton>().UpdateColor(true);
+		if (reader.HasRows) {
+			while (reader.Read()) {
+				//Debug.Log ((string)reader["roomname"]);
+				roomName = (string)reader ["roomname"];
+				roomCount = (int)reader ["roomcount"];
+				roomID = (int)reader ["roomid"];
+				//Debug.Log (roomName);
+				nameLabels [rowsAffected].text = roomName;
+				numPlayersLabels [rowsAffected].text = roomCount + "/4";
+				roomNumLabels [rowsAffected].text = roomID.ToString ();
+				rooms [rowsAffected].GetComponent<RoomID> ().setRoomID (roomID);
+				rooms [rowsAffected].GetComponent<RoomID> ().setRoomCount (roomCount);
+				if (roomCount > 0 && roomCount < 4) {
+					rooms [rowsAffected].GetComponent<UIButton> ().isEnabled = true;
+					rooms [rowsAffected].GetComponent<UIButton> ().UpdateColor (true);
 
+				}
+				rowsAffected++;
+				roomCount = 0;
 			}
-			rowsAffected++;
-			roomCount = 0;
 		}
 		reader.Close ();
 		reader = null;
@@ -294,18 +396,25 @@ public class IntroController : MonoBehaviour {
 
 //Join an open room
 //Room ID, IGNs, 
-	public void JoinRoom ()
+	public void JoinRoom (int roomid)
 	{
+		//startGameButton.isEnabled = false;
+		//startGameButton.UpdateColor (true);
+		setCurrentRoomID (roomid);
 		NpgsqlCommand dbcmd;
 		string selectSQL = string.Format("SELECT roomcount FROM playerroom WHERE roomid = '{0}';", currentRoomID);
 		dbcmd = new NpgsqlCommand (selectSQL, dbcon);
 		NpgsqlDataReader reader = dbcmd.ExecuteReader();
 
 		if (reader.HasRows) {
-			if(reader.Read())
-				turnNum = ((int)reader ["roomcount"]) - 1;
+			if(reader.Read()){
+				turnNum = ((int)reader ["roomcount"]);
+				Debug.Log ("turnNum" + turnNum);
+			}
 		}
-
+		reader.Close ();
+		reader = null;
+		dbcmd.Dispose ();
 		string insertSQL = string.Format("INSERT INTO inroomstatus(pid, ign, roomid, turnid) " +
 		                                 "VALUES('{0}', '{1}', '{2}', '{3}') ;", 
 		                          pid, ign, currentRoomID, turnNum );
@@ -324,6 +433,7 @@ public class IntroController : MonoBehaviour {
 		startGameController.setRoomID (currentRoomID);
 		startGameController.setPID (pid);
 		//Insert into inroom status
+		HideLobbyPanel ();
 		ShowCurrentGameRoomPanel ();
 
 	}
@@ -331,6 +441,8 @@ public class IntroController : MonoBehaviour {
 //Create a room
 	public void CreateRoom()
 	{
+		createRoomCreateButton.isEnabled = false;
+		createRoomCreateButton.UpdateColor (true);
 		NpgsqlCommand dbcmd;
 		string roomName = String.Empty;
 		roomName = createRoomNameInput.value;
@@ -341,7 +453,8 @@ public class IntroController : MonoBehaviour {
 		dbcmd.ExecuteNonQuery();
 		dbcmd.Dispose();
 
-		StartCoroutine( updateCurrentRoomID ());
+		updateCurrentRoomID ();
+		//StartCoroutine( updateCurrentRoomID ());
 		Debug.Log ("Created RoomID" + currentRoomID);
 		//Insert player info to inroomstatus
 		insertSQL = string.Format("INSERT INTO inroomstatus(pid, ign, roomid, turnid) " +
@@ -358,10 +471,26 @@ public class IntroController : MonoBehaviour {
 	{
 		currentRoomID = newRoomID;
 	}
-	IEnumerator updateCurrentRoomID()
+	public void updateCurrentRoomID()
 	{
 		NpgsqlCommand dbcmd;
-		string selectSQL = string.Format ("SELECT roomid FROM playerRoom WHERE host_pid = '{0}' ORDER BY roomid DESC ", pid);
+		string selectSQL = string.Format ("SELECT roomid FROM playerroom WHERE host_pid = '{0}' ORDER BY roomid DESC ", pid);
+		dbcmd = new NpgsqlCommand (selectSQL, dbcon);
+		NpgsqlDataReader reader = dbcmd.ExecuteReader();
+		if (reader.HasRows) {
+			reader.Read ();
+			currentRoomID = (int)reader ["roomid"];
+		}
+		reader.Close();
+		reader = null;
+		dbcmd.Dispose ();
+
+	}
+	IEnumerator updateCurrentRoomID2()
+	{
+		currentRoomID = -1;
+		NpgsqlCommand dbcmd;
+		string selectSQL = string.Format ("SELECT roomid FROM inroomstatus WHERE pid = '{0}' ORDER BY roomid DESC ", pid);
 		dbcmd = new NpgsqlCommand (selectSQL, dbcon);
 		NpgsqlDataReader reader = dbcmd.ExecuteReader();
 		if (reader.HasRows) {
@@ -462,7 +591,7 @@ public class IntroController : MonoBehaviour {
 	public void LeaveRoom()
 	{
 		NpgsqlCommand dbcmd;
-		string deleteSQL;
+		string deleteSQL, updateSQL;
 		Debug.Log ("isHost:" + isHost);
 		if (isHost) {
 			deleteSQL = string.Format ("DELETE FROM playerroom WHERE roomid = '{0}';", currentRoomID);
@@ -476,6 +605,11 @@ public class IntroController : MonoBehaviour {
 			dbcmd.Dispose ();
 			*/
 		} else {
+			updateSQL = string.Format("UPDATE playerroom SET roomcount = roomcount-1 WHERE roomid = '{0}';", currentRoomID);
+			dbcmd = new NpgsqlCommand (updateSQL, dbcon);
+			dbcmd.ExecuteNonQuery();
+			dbcmd.Dispose();
+
 			deleteSQL = string.Format ("DELETE FROM inroomstatus WHERE pid = '{0}'  ;", pid);
 			dbcmd = new NpgsqlCommand (deleteSQL, dbcon);
 			dbcmd.ExecuteNonQuery ();
@@ -487,10 +621,14 @@ public class IntroController : MonoBehaviour {
 		startGameController.resetIDs ();
 		isHost = false;
 		Debug.Log ("Left the room");
+		HideCurrentGameRoomPanel ();
+		ShowLobbyPanel ();
 		
 	}
+
 	public void startButtonUpdate()
 	{
+		Debug.Log("StartButtonUpdate()");
 		startGameButton.isEnabled = false;
 		startGameButton.UpdateColor(true);
 		NpgsqlCommand dbcmd;
@@ -500,20 +638,19 @@ public class IntroController : MonoBehaviour {
 			selectSQL = string.Format ("SELECT roomcount FROM playerroom WHERE roomid = '{0}';", currentRoomID);
 			dbcmd = new NpgsqlCommand (selectSQL, dbcon);
 			NpgsqlDataReader reader = dbcmd.ExecuteReader ();
-			if(reader.HasRows){
-				if(reader.Read()){
-					roomCount = (int)reader["roomcount"];
+			if (reader.HasRows) {
+				if (reader.Read ()) {
+					roomCount = (int)reader ["roomcount"];
 				}
 			}
 			reader.Close ();
 			reader = null;
 			dbcmd.Dispose ();
-			if(roomCount > 2)
-			{
+			if (roomCount >= 2) {
 				startGameButton.isEnabled = true;
-				startGameButton.UpdateColor(true);
+				startGameButton.UpdateColor (true);
 			}
-		}
+		} 
 	}
 	public void StartGame()
 	{
@@ -562,11 +699,12 @@ public class IntroController : MonoBehaviour {
 	public void ShowCreateRoomPanel()
 	{
 		createRoomPanel.GetComponent<TweenAlpha>().PlayForward ();
+		createRoomCreateButton.isEnabled = true;
+		createRoomCreateButton.UpdateColor (true);
 	}
 	public void ShowCurrentGameRoomPanel()
 	{
 		currentRoomPanel.GetComponent<TweenAlpha>().PlayForward ();	
-		DisplayCurrentRoomPlayers ();
 	}
 	public void HideRegisterPanel()
 	{

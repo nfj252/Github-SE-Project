@@ -45,20 +45,28 @@ public class InGameDBController : MonoBehaviour
 		Debug.Log ("Connected");
 	}
 
-	public void FetchRoomData()
+	public void InsertRoomData()
 	{
 		dbcmd = dbcon.CreateCommand();
-		Debug.Log (gameID);
-		dbcmd.CommandText =  string.Format ("SELECT ign, xcoord, ycoord FROM ingameplayer WHERE roomid = '{0}' ORDER BY turnid ASC;", gameID);
+		//string insertSQL = string.Format("INSERT INTO inroomstatus(pid, ign, roomid, turnid) " + "VALUES
+		//dbcmd.CommandText =  string.Format ("SELECT ign, xcoord, ycoord FROM ingameplayer WHERE roomid = '{0}' ORDER BY turnid ASC;", gameID);
+		dbcmd.CommandText =  string.Format ("SELECT ign FROM inroomstatus WHERE roomid = '{0}' ORDER BY turnid ASC;", gameID);
 		reader = dbcmd.ExecuteReader();
 		while(reader.Read()) 
 		{
 			playerNames.Add(reader.GetString (0));
-			playerLocations.Add (new Vector2 ((reader.GetInt32(1)), reader.GetInt32(2)));  
+			playerLocations.Add (new Vector2 (0, 0));  
 		}
-		numberOfPlayers = playerNames.Count; 
-		Debug.Log (numberOfPlayers);
 		CleanUpSQLVariables ();
+		numberOfPlayers = playerNames.Count; 
+		for(int i = 0; i < numberOfPlayers; i++)
+		{
+			dbcmd = dbcon.CreateCommand();
+			dbcmd.CommandText =  string.Format ("INSERT INTO ingameplayer (ign, xcoord, ycoord) VALUES ('{0}', '{1}', '{2}');", 
+			                                    playerNames[i], playerLocations[i].x, playerLocations[i].y);
+			reader = dbcmd.ExecuteReader();
+			CleanUpSQLVariables ();
+		}
 	}
 
 	public void FetchInitialGridData()
@@ -98,12 +106,6 @@ public class InGameDBController : MonoBehaviour
 		CleanUpSQLVariables ();
 	}
 
-	public IEnumerator FetchPlayerLocationsCo()
-	{
-		FetchPlayerLocations ();
-		yield return null;
-	}
-
 	public void FetchCurrentPlayerTurn()
 	{
 		dbcmd = dbcon.CreateCommand();
@@ -114,9 +116,26 @@ public class InGameDBController : MonoBehaviour
 		CleanUpSQLVariables ();
 	}
 
+	public IEnumerator FetchPlayerLocationsCo()
+	{
+		FetchPlayerLocations ();
+		yield return null;
+	}
+
 	public IEnumerator FetchCurrentPlayerTurnCo()
 	{
 		FetchCurrentPlayerTurn ();
+		yield return null;
+	}
+
+	public IEnumerator FetchWinnderPID()
+	{
+		dbcmd = dbcon.CreateCommand();
+		dbcmd.CommandText =  string.Format ("SELECT winner FROM ingameroom");
+		reader = dbcmd.ExecuteReader();
+		reader.Read (); 
+		winnerPID = reader.GetInt32(0);
+		CleanUpSQLVariables ();
 		yield return null;
 	}
 
@@ -131,16 +150,6 @@ public class InGameDBController : MonoBehaviour
 		CleanUpSQLVariables ();
 	}
 
-	public void FetchWinnderPID()
-	{
-		dbcmd = dbcon.CreateCommand();
-		dbcmd.CommandText =  string.Format ("SELECT winner FROM ingameroom");
-		reader = dbcmd.ExecuteReader();
-		reader.Read (); 
-		winnerPID = reader.GetInt32(0);
-		CleanUpSQLVariables ();
-	}
-	
 	public void IncrementPTurn()
 	{
 		currentPlayerTurn++;

@@ -4,7 +4,6 @@ using System.Collections.Generic;
 
 public class GameflowController : MonoBehaviour 
 {
-	//public GameObject introSceneLeftover;  //will hold user localname from intro scene
 	public GameObject playersParent;
 	public GameObject[] playerPrefabs;
 	public float timerRefreshRate;
@@ -15,6 +14,7 @@ public class GameflowController : MonoBehaviour
 	InGameDBController inGameDBController;
 	OrientationController orientationController;
 	TaskController taskController;
+	StartGameID introHolder;
 
 	//Player Controller Stuff
 	List<Player> players; 
@@ -27,6 +27,7 @@ public class GameflowController : MonoBehaviour
 
 	void Start () 
 	{
+		introHolder = FindObjectOfType<StartGameID> ();
 		tileController = FindObjectOfType<TileController>();
 		tileController.Setup();
 		buildingController = FindObjectOfType<BuildingController> ();
@@ -41,13 +42,13 @@ public class GameflowController : MonoBehaviour
 		tileController.CreateGrid (inGameDBController.GetGridSize());
 		inGameDBController.FetchBuildingData ();
 		buildingController.CreateBuildings (inGameDBController.GetBuildingData());
-		inGameDBController.SetGameID (1);
-		inGameDBController.FetchRoomData ();
+		inGameDBController.SetGameID (introHolder.GetRoomID()); 
+		inGameDBController.InsertRoomData ();
 		inGameDBController.FetchCurrentPlayerTurn ();
 
-
-		localPlayerPID = 45; ////temp
-		localPlayerTurnID = 1; ///////////////////temp
+		localPlayerPID = introHolder.GetPID(); 
+		localPlayerTurnID = introHolder.GetTurnID ();
+		GameObject.Destroy (introHolder);
 
 		players = new List<Player>();
 		CreatePlayers (inGameDBController.GetNumberOfPlayers ());
@@ -57,7 +58,7 @@ public class GameflowController : MonoBehaviour
 		taskController.InitializeLPTaskLabels (GetLocalPlayer().tasks);
 
 		orientationController.ScaleUI ();
-		tileController.SetLocalPlayerModelRef(players[localPlayerTurnID].playerModel); ///////////////////temp
+		tileController.SetLocalPlayerModelRef(players[localPlayerTurnID].playerModel); 
 
 		SetInitialCameraPosition ();
 		remainingMoves = 0;
@@ -169,7 +170,7 @@ public class GameflowController : MonoBehaviour
 	public void RollDice()
 	{
 		orientationController.SetCanMovePlayer(false);
-		remainingMoves = (int)Random.Range (1, 7);
+		remainingMoves = (int)Random.Range (1, 7000);
 		orientationController.SetMovesLabel (remainingMoves.ToString());
 		orientationController.SetRollDiceButtonStatus (false);
 		orientationController.SetEndTurnButtonStatus (true);
@@ -198,9 +199,16 @@ public class GameflowController : MonoBehaviour
 			else
 			{
 				if(i == GetLocalPlayer().tasks.Count - 1)
+				{
 					inGameDBController.SetWinner(localPlayerPID);
+				}
 			}
 		}
+	}
+
+	public void ReturnToIntro()
+	{
+		Application.LoadLevel ("Intro");
 	}
 
 	void Update () 
@@ -213,6 +221,7 @@ public class GameflowController : MonoBehaviour
 				timer = 0f;
 				StartCoroutine(inGameDBController.FetchCurrentPlayerTurnCo());
 				StartCoroutine(inGameDBController.FetchPlayerLocationsCo());
+				StartCoroutine(inGameDBController.FetchWinnderPID());
 
 				for(int i = 0; i < players.Count; i++)
 				{
@@ -228,14 +237,13 @@ public class GameflowController : MonoBehaviour
 					if(GetIsLPOnBuildingEntrance())
 						StartCoroutine(taskController.UpdateBuildingTaskQuantityLabels(inGameDBController.GetTaskData()));
 				}
-
-				if(!inGameDBController.GetWinnerPID().Equals(-1))
-				{
-					inGameDBController.FetchWinnerPlayerName();
-					orientationController.SetWinnerLabel(inGameDBController.GetWinnerName());
-					orientationController.ShowWinnerDisplayPanel();
-				}
 			}
+		}
+		else
+		{
+			inGameDBController.FetchWinnerPlayerName();
+			orientationController.SetWinnerLabel(inGameDBController.GetWinnerName());
+			orientationController.ShowWinnerDisplayPanel();
 		}
 	}
 }

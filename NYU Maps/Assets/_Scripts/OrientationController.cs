@@ -70,7 +70,7 @@ public class OrientationController : MonoBehaviour
 		}
 		else
 		{
-			canMovePlayer = true;
+			StartCoroutine(DelayedSetCanMovePlayer(true));
 			lpTaskButtonLabel.text = "Show Tasks";
 			lpTasksPanel.GetComponent<TweenAlpha>().PlayReverse();
 		}
@@ -86,7 +86,7 @@ public class OrientationController : MonoBehaviour
 		}
 		else
 		{
-			canMovePlayer = true;
+			StartCoroutine(DelayedSetCanMovePlayer(true));
 			enterBuildingButtonLabel.text = "Enter Building";
 			buildingTasksPanel.GetComponent<TweenAlpha>().PlayReverse();
 		}
@@ -111,7 +111,7 @@ public class OrientationController : MonoBehaviour
 	{
 		yield return new WaitForEndOfFrame ();
 		yield return new WaitForSeconds (.1f);
-		canMovePlayer = true;
+		canMovePlayer = val;
 		yield return null;
 	}
 
