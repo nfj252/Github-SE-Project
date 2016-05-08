@@ -10,9 +10,9 @@ public class InGameDBController : MonoBehaviour
 {
 	int gameID;
 	int numberOfPlayers; 
-	List<string> playerNames;
-	List<Vector2> playerLocations;
-	List<int> pids;
+	public List<string> playerNames;
+	public List<Vector2> playerLocations;
+	public List<int> pids;
 	int currentPlayerTurn;
 	int winnerPID;
 	String winnerName;
@@ -47,25 +47,23 @@ public class InGameDBController : MonoBehaviour
 		Debug.Log ("Connected");
 	}
 
-	public void InsertRoomData()
+	public void InsertRoomData(List<string> insertNames, List<int> insertIDs)
 	{
-		dbcmd = dbcon.CreateCommand();
-		dbcmd.CommandText =  string.Format ("SELECT ign, pid FROM inroomstatus WHERE roomid = '{0}' ORDER BY turnid ASC;", gameID);
-		reader = dbcmd.ExecuteReader();
-		while(reader.Read()) 
-		{
-			playerNames.Add(reader.GetString (0));
-			pids.Add((int)reader.GetInt64(1));
-			playerLocations.Add (new Vector2 (0, 0));  
-		}
-		CleanUpSQLVariables ();
-
 		numberOfPlayers = playerNames.Count; 
+		playerNames = insertNames;
+		pids = insertIDs;
+
 		for(int i = 0; i < numberOfPlayers; i++)
 		{
+			playerLocations.Add(new Vector2(0,0));
+		}
+
+		for(int i = 0; i < numberOfPlayers; i++)
+		{
+
 			dbcmd = dbcon.CreateCommand();
-			dbcmd.CommandText =  string.Format ("INSERT INTO ingameplayer (pid, ign, xcoord, ycoord) VALUES ('{0}', '{1}', '{2}', '{3}');", 
-			                                    pids[i], playerNames[i], playerLocations[i].x, playerLocations[i].y);
+			dbcmd.CommandText =  string.Format ("INSERT INTO ingameplayer (pid, ign, roomid, xcoord, ycoord) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}');", 
+			                                    pids[i], playerNames[i], gameID, playerLocations[i].x, playerLocations[i].y);
 			reader = dbcmd.ExecuteReader();
 			CleanUpSQLVariables ();
 		}

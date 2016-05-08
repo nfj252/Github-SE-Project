@@ -42,13 +42,14 @@ public class GameflowController : MonoBehaviour
 		inGameDBController.FetchBuildingData ();
 		buildingController.CreateBuildings (inGameDBController.GetBuildingData());
 		inGameDBController.SetGameID (introHolder.GetRoomID()); 
-		inGameDBController.InsertRoomData ();
+		inGameDBController.InsertRoomData (introHolder.getIGNList(), introHolder.getPIDList());
 		inGameDBController.FetchCurrentPlayerTurn ();
 		localPlayerPID = introHolder.GetPID(); 
 		localPlayerTurnID = introHolder.GetTurnID ();
-		GameObject.Destroy (introHolder);
+		//GameObject.Destroy (introHolder);
 
 		players = new List<Player>();
+		Debug.Log (inGameDBController.GetNumberOfPlayers ());
 		CreatePlayers (inGameDBController.GetNumberOfPlayers ());
 		inGameDBController.FetchTaskData ();
 		taskController.AssignBuildingTasks (inGameDBController.GetTaskData(), buildingController.GetBuildings());

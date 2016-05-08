@@ -239,6 +239,8 @@ public class IntroController : MonoBehaviour {
 	}
 	public void Refresh()
 	{
+		string deleteSQL;
+		NpgsqlCommand dbcmd;
 		//Debug.Log (currentRoomID);
 		if (currentRoomID <= 0) {
 			ShowRooms ();
@@ -261,6 +263,13 @@ public class IntroController : MonoBehaviour {
 
 			if(gameHasStarted())
 			{
+				fillLists();
+				if(isHost){
+					deleteSQL = string.Format("DELETE FROM inroomstatus WHERE roomid='{0}'", currentRoomID);
+					dbcmd = new NpgsqlCommand (deleteSQL, dbcon);
+					dbcmd.ExecuteNonQuery();
+					dbcmd.Dispose();
+				}
 				Debug.Log("Killing intro connection");
 				if (dbcon != null) {
 					if (dbcon.State.ToString() != "Closed") {
@@ -664,11 +673,37 @@ public class IntroController : MonoBehaviour {
 			}
 		} 
 	}
+	public void fillLists()
+	{
+		NpgsqlCommand dbcmd;
+		string updateSQL, selectSQL, insertSQL, deleteSQL;
+		int roomCount, rowsAffected, thepid;
+		string theign;
+
+		selectSQL = string.Format ("SELECT pid, ign FROM inroomstatus WHERE roomid = '{0}' LIMIT 4;", currentRoomID);
+		dbcmd = new NpgsqlCommand (selectSQL, dbcon);
+		NpgsqlDataReader reader = dbcmd.ExecuteReader ();
+		while (reader.HasRows)
+		{
+			if(reader.Read()){
+				theign = reader["ign"].ToString();
+				thepid = (int)(reader.GetInt64(0));
+				startGameController.addIGN(theign);
+				startGameController.addPID(thepid);
+				
+			}
+		}
+		reader.Close();
+		reader = null;
+		dbcmd.Dispose();
+
+	}
 	public void StartGame()
 	{
 		NpgsqlCommand dbcmd;
 		string updateSQL, selectSQL, insertSQL, deleteSQL;
-		int roomCount;
+		int roomCount, rowsAffected, thepid;
+		string theign;
 
 		if (isHost) {
 			updateSQL = string.Format ("UPDATE playerroom SET game_is_ready = TRUE WHERE roomid = '{0}';", currentRoomID);
@@ -686,10 +721,9 @@ public class IntroController : MonoBehaviour {
 			dbcmd.ExecuteNonQuery();
 			dbcmd.Dispose();
 
-			deleteSQL = string.Format("DELETE FROM inroomstatus WHERE roomid='{0}'", currentRoomID);
-			dbcmd = new NpgsqlCommand (deleteSQL, dbcon);
-			dbcmd.ExecuteNonQuery();
-			dbcmd.Dispose();
+			fillLists();
+
+		
 
 			startGameController.setTurnID (0);
 			startGameController.setRoomID (currentRoomID);
