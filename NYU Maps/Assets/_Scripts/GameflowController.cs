@@ -207,6 +207,7 @@ public class GameflowController : MonoBehaviour
 
 	public void ReturnToIntro()
 	{
+		inGameDBController.DeleteInGamePlayerData ();
 		Application.LoadLevel ("Intro");
 	}
 

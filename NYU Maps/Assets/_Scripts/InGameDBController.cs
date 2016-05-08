@@ -10,9 +10,9 @@ public class InGameDBController : MonoBehaviour
 {
 	int gameID;
 	int numberOfPlayers; 
+	int pid;
 	public List<string> playerNames;
 	public List<Vector2> playerLocations;
-	public List<int> pids;
 	int currentPlayerTurn;
 	int winnerPID;
 	String winnerName;
@@ -31,7 +31,6 @@ public class InGameDBController : MonoBehaviour
 		playerLocations = new List<Vector2>();
 		buildingInitializationData = new List<string>();
 		taskInitializationData = new List<string>();
-		pids = new List<int> ();
 		winnerPID = -1;
 	}
 
@@ -51,7 +50,7 @@ public class InGameDBController : MonoBehaviour
 	{
 		numberOfPlayers = insertNames.Count; 
 		playerNames = insertNames;
-		pids = insertIDs;
+		pid = insertIDs[turnID];
 
 		for(int i = 0; i < numberOfPlayers; i++)
 		{
@@ -59,7 +58,7 @@ public class InGameDBController : MonoBehaviour
 		}
 		dbcmd = dbcon.CreateCommand();
 		dbcmd.CommandText =  string.Format ("INSERT INTO ingameplayer (turnid, pid, ign, roomid, xcoord, ycoord) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}');", 
-	                                    	turnID, pids[turnID], playerNames[turnID], gameID, playerLocations[turnID].x, playerLocations[turnID].y);
+		                                    turnID, pid, playerNames[turnID], gameID, playerLocations[turnID].x, playerLocations[turnID].y);
 		reader = dbcmd.ExecuteReader();
 		CleanUpSQLVariables ();
 
@@ -127,7 +126,7 @@ public class InGameDBController : MonoBehaviour
 	public IEnumerator FetchWinnderPID()
 	{
 		dbcmd = dbcon.CreateCommand();
-		dbcmd.CommandText =  string.Format ("SELECT winner FROM ingameroom");
+		dbcmd.CommandText =  string.Format ("SELECT winner FROM ingameroom WHERE roomid = '{0}';", gameID);
 		reader = dbcmd.ExecuteReader();
 		reader.Read (); 
 		winnerPID = reader.GetInt32(0);
@@ -185,7 +184,7 @@ public class InGameDBController : MonoBehaviour
 	public void SetWinner(int localPlayerID)
 	{
 		dbcmd = dbcon.CreateCommand();
-		dbcmd.CommandText =  string.Format ("UPDATE ingameroom SET winner = '{0}';", localPlayerID);
+		dbcmd.CommandText =  string.Format ("UPDATE ingameroom SET winner = '{0}' WHERE roomid = '{1}';", localPlayerID, gameID);
 		reader = dbcmd.ExecuteReader();
 		CleanUpSQLVariables ();
 	}
@@ -258,9 +257,18 @@ public class InGameDBController : MonoBehaviour
 		dbcmd.Dispose();
 		dbcmd = null;
 	}
+		
+	public void DeleteInGamePlayerData()
+	{
+		dbcmd = dbcon.CreateCommand();
+		dbcmd.CommandText =  string.Format ("DELETE FROM ingameplayer WHERE pid = '{0}';", pid);
+		reader = dbcmd.ExecuteReader();
+		CleanUpSQLVariables ();
+	}
 
 	void OnApplicationQuit()
 	{
+		DeleteInGamePlayerData ();
 		dbcon.Close();
 		dbcon = null;
 		Debug.Log ("Connection Closed");
