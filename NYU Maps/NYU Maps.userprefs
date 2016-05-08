@@ -1,12 +1,12 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\_Scripts\GameflowController.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\_Scripts\OrientationController.cs">
     <Files>
-      <File FileName="Assets\_Scripts\InGameDBController.cs" Line="261" Column="36" />
-      <File FileName="Assets\_Scripts\IntroController.cs" Line="194" Column="16" />
-      <File FileName="Assets\_Scripts\GameflowController.cs" Line="210" Column="48" />
+      <File FileName="Assets\_Scripts\OrientationController.cs" Line="31" Column="58" />
+      <File FileName="Assets\_Scripts\InGameDBController.cs" Line="1" Column="1" />
+      <File FileName="Assets\_Scripts\IntroController.cs" Line="1" Column="1" />
+      <File FileName="Assets\_Scripts\GameflowController.cs" Line="210" Column="28" />
       <File FileName="Assets\_Scripts\StartGameID.cs" Line="1" Column="1" />
-      <File FileName="Assets\_Scripts\OrientationController.cs" Line="129" Column="61" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
