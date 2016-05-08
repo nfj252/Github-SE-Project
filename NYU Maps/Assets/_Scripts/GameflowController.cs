@@ -43,6 +43,7 @@ public class GameflowController : MonoBehaviour
 		inGameDBController.FetchBuildingData ();
 		buildingController.CreateBuildings (inGameDBController.GetBuildingData());
 		inGameDBController.SetGameID (introHolder.GetRoomID()); 
+
 		inGameDBController.InsertRoomData ();
 		inGameDBController.FetchCurrentPlayerTurn ();
 

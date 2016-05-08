@@ -48,8 +48,6 @@ public class InGameDBController : MonoBehaviour
 	public void InsertRoomData()
 	{
 		dbcmd = dbcon.CreateCommand();
-		//string insertSQL = string.Format("INSERT INTO inroomstatus(pid, ign, roomid, turnid) " + "VALUES
-		//dbcmd.CommandText =  string.Format ("SELECT ign, xcoord, ycoord FROM ingameplayer WHERE roomid = '{0}' ORDER BY turnid ASC;", gameID);
 		dbcmd.CommandText =  string.Format ("SELECT ign FROM inroomstatus WHERE roomid = '{0}' ORDER BY turnid ASC;", gameID);
 		reader = dbcmd.ExecuteReader();
 		while(reader.Read()) 

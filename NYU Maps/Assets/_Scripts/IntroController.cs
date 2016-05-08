@@ -398,8 +398,8 @@ public class IntroController : MonoBehaviour {
 //Room ID, IGNs, 
 	public void JoinRoom (int roomid)
 	{
-		//startGameButton.isEnabled = false;
-		//startGameButton.UpdateColor (true);
+		startGameButton.isEnabled = false;
+		startGameButton.UpdateColor (true);
 		setCurrentRoomID (roomid);
 		NpgsqlCommand dbcmd;
 		string selectSQL = string.Format("SELECT roomcount FROM playerroom WHERE roomid = '{0}';", currentRoomID);
@@ -655,7 +655,7 @@ public class IntroController : MonoBehaviour {
 	public void StartGame()
 	{
 		NpgsqlCommand dbcmd;
-		string updateSQL, selectSQL;
+		string updateSQL, selectSQL, insertSQL;
 		int roomCount;
 
 		if (isHost) {
@@ -666,6 +666,14 @@ public class IntroController : MonoBehaviour {
 			//dbcmd = new NpgsqlCommand (insertSQL, dbcon);
 			dbcmd.ExecuteNonQuery ();
 			dbcmd.Dispose ();
+
+			insertSQL = string.Format("INSERT INTO ingameroom " +
+			                          "VALUES('{0}', '{1}', {2}) ;", 
+			                          0, currentRoomID, -1);
+			dbcmd = new NpgsqlCommand (insertSQL, dbcon);
+			dbcmd.ExecuteNonQuery();
+			dbcmd.Dispose();
+
 			startGameController.setTurnID (0);
 			startGameController.setRoomID (currentRoomID);
 			startGameController.setPID (pid);
