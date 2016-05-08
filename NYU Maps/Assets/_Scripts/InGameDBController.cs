@@ -47,7 +47,7 @@ public class InGameDBController : MonoBehaviour
 		Debug.Log ("Connected");
 	}
 
-	public void InsertRoomData(List<string> insertNames, List<int> insertIDs)
+	public void InsertRoomData(int turnID, List<string> insertNames, List<int> insertIDs)
 	{
 		numberOfPlayers = insertNames.Count; 
 		playerNames = insertNames;
@@ -57,16 +57,12 @@ public class InGameDBController : MonoBehaviour
 		{
 			playerLocations.Add(new Vector2(0,0));
 		}
+		dbcmd = dbcon.CreateCommand();
+		dbcmd.CommandText =  string.Format ("INSERT INTO ingameplayer (turnid, pid, ign, roomid, xcoord, ycoord) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}', '{5}');", 
+	                                    	turnID, pids[turnID], playerNames[turnID], gameID, playerLocations[turnID].x, playerLocations[turnID].y);
+		reader = dbcmd.ExecuteReader();
+		CleanUpSQLVariables ();
 
-		for(int i = 0; i < numberOfPlayers; i++)
-		{
-
-			dbcmd = dbcon.CreateCommand();
-			dbcmd.CommandText =  string.Format ("INSERT INTO ingameplayer (pid, ign, roomid, xcoord, ycoord) VALUES ('{0}', '{1}', '{2}', '{3}', '{4}');", 
-			                                    pids[i], playerNames[i], gameID, playerLocations[i].x, playerLocations[i].y);
-			reader = dbcmd.ExecuteReader();
-			CleanUpSQLVariables ();
-		}
 	}
 
 	public void FetchInitialGridData()

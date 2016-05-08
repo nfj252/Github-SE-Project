@@ -64,7 +64,7 @@ public class OrientationController : MonoBehaviour
 	{
 		if(lpTasksPanel.alpha == 0)
 		{
-			canMovePlayer = false;
+			//canMovePlayer = false;
 			lpTaskButtonLabel.text = "Hide Tasks";
 			lpTasksPanel.GetComponent<TweenAlpha>().PlayForward();
 		}
@@ -80,7 +80,7 @@ public class OrientationController : MonoBehaviour
 	{
 		if(buildingTasksPanel.alpha == 0)
 		{
-			canMovePlayer = false;
+			//canMovePlayer = false;
 			enterBuildingButtonLabel.text = "Exit Building";
 			buildingTasksPanel.GetComponent<TweenAlpha>().PlayForward();
 		}
