@@ -12,6 +12,7 @@ public class InGameDBController : MonoBehaviour
 	int numberOfPlayers; 
 	List<string> playerNames;
 	List<Vector2> playerLocations;
+	List<int> pids;
 	int currentPlayerTurn;
 	int winnerPID;
 	String winnerName;
@@ -30,6 +31,7 @@ public class InGameDBController : MonoBehaviour
 		playerLocations = new List<Vector2>();
 		buildingInitializationData = new List<string>();
 		taskInitializationData = new List<string>();
+		pids = new List<int> ();
 		winnerPID = -1;
 	}
 
@@ -48,20 +50,22 @@ public class InGameDBController : MonoBehaviour
 	public void InsertRoomData()
 	{
 		dbcmd = dbcon.CreateCommand();
-		dbcmd.CommandText =  string.Format ("SELECT ign FROM inroomstatus WHERE roomid = '{0}' ORDER BY turnid ASC;", gameID);
+		dbcmd.CommandText =  string.Format ("SELECT ign, pid FROM inroomstatus WHERE roomid = '{0}' ORDER BY turnid ASC;", gameID);
 		reader = dbcmd.ExecuteReader();
 		while(reader.Read()) 
 		{
 			playerNames.Add(reader.GetString (0));
+			pids.Add((int)reader.GetInt64(1));
 			playerLocations.Add (new Vector2 (0, 0));  
 		}
 		CleanUpSQLVariables ();
+
 		numberOfPlayers = playerNames.Count; 
 		for(int i = 0; i < numberOfPlayers; i++)
 		{
 			dbcmd = dbcon.CreateCommand();
-			dbcmd.CommandText =  string.Format ("INSERT INTO ingameplayer (ign, xcoord, ycoord) VALUES ('{0}', '{1}', '{2}');", 
-			                                    playerNames[i], playerLocations[i].x, playerLocations[i].y);
+			dbcmd.CommandText =  string.Format ("INSERT INTO ingameplayer (pid, ign, xcoord, ycoord) VALUES ('{0}', '{1}', '{2}', '{3}');", 
+			                                    pids[i], playerNames[i], playerLocations[i].x, playerLocations[i].y);
 			reader = dbcmd.ExecuteReader();
 			CleanUpSQLVariables ();
 		}
@@ -163,7 +167,6 @@ public class InGameDBController : MonoBehaviour
 
 	public void DecrementBuildingTaskQuantity(string buildingTaskName)
 	{
-		Debug.Log ("Decrementing" + buildingTaskName);
 		dbcmd = dbcon.CreateCommand(); 
 		dbcmd.CommandText = string.Format ("UPDATE ingametask SET quantity = quantity - 1 WHERE taskname = '{0}'", buildingTaskName);
 		reader = dbcmd.ExecuteReader();

@@ -3,9 +3,9 @@ using System.Collections;
 
 public class StartGameID : MonoBehaviour 
 {
-	int roomID;
-	int turnID;
-	int PID;
+	public int roomID;
+	public int turnID;
+	public int PID;
 
 	void Start () 
 	{

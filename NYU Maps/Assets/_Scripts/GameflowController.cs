@@ -36,17 +36,14 @@ public class GameflowController : MonoBehaviour
 		orientationController = FindObjectOfType<OrientationController>();
 		taskController = FindObjectOfType<TaskController>();
 		taskController.Setup();
-
 		inGameDBController.StartConnection();
 		inGameDBController.FetchInitialGridData ();
 		tileController.CreateGrid (inGameDBController.GetGridSize());
 		inGameDBController.FetchBuildingData ();
 		buildingController.CreateBuildings (inGameDBController.GetBuildingData());
 		inGameDBController.SetGameID (introHolder.GetRoomID()); 
-
 		inGameDBController.InsertRoomData ();
 		inGameDBController.FetchCurrentPlayerTurn ();
-
 		localPlayerPID = introHolder.GetPID(); 
 		localPlayerTurnID = introHolder.GetTurnID ();
 		GameObject.Destroy (introHolder);

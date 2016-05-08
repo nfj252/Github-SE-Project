@@ -64,6 +64,7 @@ public class IntroController : MonoBehaviour {
 	private int currentRoomID;
 	private float timer;
 	private bool isHost;
+	private bool keepRefreshing;
 	private int turnNum;
 	private int numPlayers;
 	public float timeTilRefresh;
@@ -77,6 +78,7 @@ public class IntroController : MonoBehaviour {
 		currentRoomID = -1;
 		turnNum = 0;
 		numPlayers = -1;
+		keepRefreshing = true;
 
 		float heightContainerScaler = (float)(Screen.height+4)/(float)loginTexture.height;	
 		loginContainer.transform.localScale = new Vector3(heightContainerScaler, heightContainerScaler, 1f);
@@ -130,7 +132,8 @@ public class IntroController : MonoBehaviour {
 			//StartCoroutine(ConsistentRefresh());
 			Refresh();
 		}*/
-		Refresh();
+		if(keepRefreshing)
+			Refresh();
 		//StartCoroutine(consistentRefresh());
 	}
 
@@ -258,6 +261,15 @@ public class IntroController : MonoBehaviour {
 
 			if(gameHasStarted())
 			{
+				Debug.Log("Killing intro connection");
+				if (dbcon != null) {
+					if (dbcon.State.ToString() != "Closed") {
+						dbcon.Close();
+						Debug.Log ("Successfully closed db connection");
+					}
+					dbcon.Dispose();
+				}
+				keepRefreshing = false;
 				Application.LoadLevel("Main");
 			}
 		}
@@ -655,7 +667,7 @@ public class IntroController : MonoBehaviour {
 	public void StartGame()
 	{
 		NpgsqlCommand dbcmd;
-		string updateSQL, selectSQL, insertSQL;
+		string updateSQL, selectSQL, insertSQL, deleteSQL;
 		int roomCount;
 
 		if (isHost) {
@@ -671,6 +683,11 @@ public class IntroController : MonoBehaviour {
 			                          "VALUES('{0}', '{1}', {2}) ;", 
 			                          0, currentRoomID, -1);
 			dbcmd = new NpgsqlCommand (insertSQL, dbcon);
+			dbcmd.ExecuteNonQuery();
+			dbcmd.Dispose();
+
+			deleteSQL = string.Format("DELETE FROM inroomstatus WHERE roomid='{0}'", currentRoomID);
+			dbcmd = new NpgsqlCommand (deleteSQL, dbcon);
 			dbcmd.ExecuteNonQuery();
 			dbcmd.Dispose();
 
