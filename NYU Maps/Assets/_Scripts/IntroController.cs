@@ -713,6 +713,9 @@ public class IntroController : MonoBehaviour {
 			dbcmd.ExecuteNonQuery();
 			dbcmd.Dispose();
 
+			startGameButton.isEnabled = false;
+			startGameButton.UpdateColor(true);
+
 			startGameController.setTurnID (0);
 			startGameController.setRoomID (currentRoomID);
 			startGameController.setPID (pid);
